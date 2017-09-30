@@ -2,7 +2,18 @@
 import pandas as pd
 import datetime
 from pandas.tseries.offsets import *
+import xlwings as xw
 
+def write_to_sheet(df, file, sheet,open_excel):
+    if (open_excel==False):
+        app = xw.App(visible=False)
+    wb = xw.Book(file)
+    sht = wb.sheets[sheet]
+    sht.range('A1').value = df
+    sht.range('A1').options(pd.DataFrame, expand='table').value
+    wb.save()
+    if (open_excel==False):
+        wb.close()
 
 def eom(df,format):
     df = pd.to_datetime(df, format=format)
