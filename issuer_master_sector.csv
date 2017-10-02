@@ -1,0 +1,672 @@
+issuer_id,gics_subindustry,gics_sector
+1,45103020,Information Technology
+2,15101050,Materials
+3,10101010,Energy
+4,20104020,Industrials
+5,35202010,Health Care
+6,20106010,Industrials
+7,25203030,Consumer Discretionary
+8,15102010,Materials
+9,20107010,Industrials
+10,20305030,Industrials
+11,55105010,Utilities
+12,55101010,Utilities
+13,15104050,Materials
+14,25203010,Consumer Discretionary
+15,20105010,Industrials
+16,15101050,Materials
+17,30202010,Consumer Staples
+18,10102040,Energy
+19,45103020,Information Technology
+20,15104050,Materials
+21,20106020,Industrials
+22,35202010,Health Care
+23,60102010,Real Estate
+24,15101050,Materials
+25,35202010,Health Care
+26,35202010,Health Care
+27,,Industrials
+28,40101010,Financials
+29,20301010,Industrials
+30,45102010,Information Technology
+31,25203030,Consumer Discretionary
+32,20104010,Industrials
+33,15102010,Materials
+34,25101010,Consumer Discretionary
+35,60102010,Real Estate
+36,60102010,Real Estate
+37,40101010,Financials
+38,60102030,Real Estate
+39,35102020,Health Care
+40,25101020,Consumer Discretionary
+41,25302010,Consumer Discretionary
+42,20104020,Industrials
+43,20301010,Industrials
+44,25203030,Consumer Discretionary
+45,25101010,Consumer Discretionary
+46,15104020,Materials
+47,20106010,Industrials
+48,20103010,Industrials
+49,15101050,Materials
+50,45201020,Information Technology
+51,20102010,Industrials
+52,35202010,Health Care
+53,35202010,Health Care
+54,15101020,Materials
+55,35202010,Health Care
+56,40101010,Financials
+57,25102020,Consumer Discretionary
+58,30302010,Consumer Staples
+59,25201040,Consumer Discretionary
+60,40202010,Financials
+61,40301030,Financials
+62,30202030,Consumer Staples
+63,40201030,Financials
+64,25401030,Consumer Discretionary
+65,25101020,Consumer Discretionary
+66,25101020,Consumer Discretionary
+67,15105020,Materials
+68,20105010,Industrials
+69,20105010,Industrials
+70,30202030,Consumer Staples
+71,40101010,Financials
+72,40101010,Financials
+73,40101010,Financials
+74,,
+75,15101020,Materials
+76,25203020,Consumer Discretionary
+77,15101030,Materials
+78,20106010,Industrials
+79,15101010,Materials
+80,20103010,Industrials
+81,20103010,Industrials
+82,20101010,Industrials
+83,40202010,Financials
+84,25101010,Consumer Discretionary
+85,20104020,Industrials
+86,10102030,Energy
+87,20106010,Industrials
+88,50102010,Telecommunication Services
+89,50101020,Telecommunication Services
+90,35203010,Health Care
+91,35201010,Health Care
+92,15102010,Materials
+93,20103010,Industrials
+94,40201020,Financials
+95,20301010,Industrials
+96,20102010,Industrials
+97,25203030,Consumer Discretionary
+98,25203030,Consumer Discretionary
+99,,
+100,25101010,Consumer Discretionary
+101,60102010,Real Estate
+102,30202030,Consumer Staples
+103,25203010,Consumer Discretionary
+104,35202010,Health Care
+105,10102020,Energy
+106,40102010,Financials
+107,40101010,Financials
+108,40202010,Financials
+109,20106020,Industrials
+110,25101010,Consumer Discretionary
+111,15101010,Materials
+112,20107010,Industrials
+113,30202030,Consumer Staples
+114,25101020,Consumer Discretionary
+115,40101010,Financials
+116,,
+117,15105010,Materials
+118,15102010,Materials
+119,20102010,Industrials
+120,55101010,Utilities
+121,20104010,Industrials
+122,15101030,Materials
+123,10102030,Energy
+124,40202010,Financials
+125,35202010,Health Care
+126,40101010,Financials
+127,15101050,Materials
+128,,
+129,10102050,Energy
+130,25301040,Consumer Discretionary
+131,30302010,Consumer Staples
+132,20103010,Industrials
+133,20304010,Industrials
+134,45102010,Information Technology
+135,15101030,Materials
+136,15101030,Materials
+137,40101010,Financials
+138,25301020,Consumer Discretionary
+139,40203040,Financials
+140,40203040,Financials
+141,25201040,Consumer Discretionary
+142,20106010,Industrials
+143,45103020,Information Technology
+144,45201020,Information Technology
+145,30302010,Consumer Staples
+146,15102010,Materials
+147,30202030,Consumer Staples
+148,40101010,Financials
+149,15101020,Materials
+150,25401040,Consumer Discretionary
+151,15101030,Materials
+152,25301010,Consumer Discretionary
+153,25401025,Consumer Discretionary
+154,40101010,Financials
+155,40102010,Financials
+156,40101015,Financials
+157,15101030,Materials
+158,,
+159,20103010,Industrials
+160,25401025,Consumer Discretionary
+161,35203010,Health Care
+162,35203010,Health Care
+163,60102010,Real Estate
+164,35202010,Health Care
+165,20305030,Industrials
+166,60102030,Real Estate
+167,15101030,Materials
+168,45102020,Information Technology
+169,40203010,Financials
+170,25302010,Consumer Discretionary
+171,20106010,Industrials
+172,25301020,Consumer Discretionary
+173,35202010,Health Care
+174,20104020,Industrials
+175,20102010,Industrials
+176,15104050,Materials
+177,20106020,Industrials
+178,30302010,Consumer Staples
+179,20103010,Industrials
+180,25401020,Consumer Discretionary
+181,20103010,Industrials
+182,20103010,Industrials
+183,25401030,Consumer Discretionary
+184,20106015,Industrials
+185,15103010,Materials
+186,,
+187,,
+188,,
+189,15103010,Materials
+190,30301010,Consumer Staples
+191,15103010,Materials
+192,25302010,Consumer Discretionary
+193,25101010,Consumer Discretionary
+194,35202010,Health Care
+195,40101010,Financials
+196,45103010,Information Technology
+197,20104010,Industrials
+198,15101010,Materials
+199,45102020,Information Technology
+200,,
+201,20106010,Industrials
+202,35102020,Health Care
+203,25503020,Consumer Discretionary
+204,55102010,Utilities
+205,20103010,Industrials
+206,20103010,Industrials
+207,60102010,Real Estate
+208,20305030,Industrials
+209,20103010,Industrials
+210,20103010,Industrials
+211,20104020,Industrials
+212,,
+213,45103020,Information Technology
+214,15101010,Materials
+215,30302010,Consumer Staples
+216,25203010,Consumer Discretionary
+217,30202030,Consumer Staples
+218,35202010,Health Care
+219,35202010,Health Care
+220,40201020,Financials
+221,45102010,Information Technology
+222,20103010,Industrials
+223,30203010,Consumer Staples
+224,30203010,Consumer Staples
+225,30302010,Consumer Staples
+226,30302010,Consumer Staples
+227,15101020,Materials
+228,60102030,Real Estate
+229,30202030,Consumer Staples
+230,15101010,Materials
+231,35202010,Health Care
+232,20104010,Industrials
+233,15102010,Materials
+234,10102040,Energy
+235,10101020,Energy
+236,20106020,Industrials
+237,15105010,Materials
+238,20106020,Industrials
+239,40102010,Financials
+240,50102010,Telecommunication Services
+241,45102010,Information Technology
+242,15101050,Materials
+243,55102010,Utilities
+244,55105010,Utilities
+245,10102050,Energy
+246,15101030,Materials
+247,15104050,Materials
+248,20305030,Industrials
+249,15101030,Materials
+250,55102010,Utilities
+251,15101010,Materials
+252,20305010,Industrials
+253,20104010,Industrials
+254,25401025,Consumer Discretionary
+255,20104010,Industrials
+256,45102010,Information Technology
+257,45102010,Information Technology
+258,40101010,Financials
+259,15102010,Materials
+260,25102020,Consumer Discretionary
+261,45102010,Information Technology
+262,50101020,Telecommunication Services
+263,25203030,Consumer Discretionary
+264,15104010,Materials
+265,25401025,Consumer Discretionary
+266,20103010,Industrials
+267,25401040,Consumer Discretionary
+268,10102020,Energy
+269,10102030,Energy
+270,30301010,Consumer Staples
+271,25301020,Consumer Discretionary
+272,60102030,Real Estate
+273,40102010,Financials
+274,15103010,Materials
+275,25401040,Consumer Discretionary
+276,50102010,Telecommunication Services
+277,45103010,Information Technology
+278,,
+279,40101010,Financials
+280,40203040,Financials
+281,45103010,Information Technology
+282,40101010,Financials
+283,50102010,Telecommunication Services
+284,40201040,Financials
+285,40101010,Financials
+286,40201040,Financials
+287,40203020,Financials
+288,40203010,Financials
+289,20103010,Industrials
+290,,
+291,20305020,Industrials
+292,15102010,Materials
+293,40102010,Financials
+294,55105010,Utilities
+295,60102010,Real Estate
+296,40203020,Financials
+297,40101010,Financials
+298,25301020,Consumer Discretionary
+299,45103010,Information Technology
+300,15104050,Materials
+301,40101010,Financials
+302,25203030,Consumer Discretionary
+303,,
+304,25203030,Consumer Discretionary
+305,35202010,Health Care
+306,55102010,Utilities
+307,40101010,Financials
+308,25502020,Consumer Discretionary
+309,45101010,Information Technology
+310,45102010,Information Technology
+311,,
+312,20106020,Industrials
+313,25401030,Consumer Discretionary
+314,,
+315,35202010,Health Care
+316,20103010,Industrials
+317,20106020,Industrials
+318,,
+319,30203010,Consumer Staples
+320,20103010,Industrials
+321,35202010,Health Care
+322,15102010,Materials
+323,25401040,Consumer Discretionary
+324,15104050,Materials
+325,15103010,Materials
+326,15103010,Materials
+327,20106015,Industrials
+328,20105010,Industrials
+329,,
+330,55105020,Utilities
+331,40101010,Financials
+332,25203030,Consumer Discretionary
+333,25203030,Consumer Discretionary
+334,20302010,Industrials
+335,,
+336,15101010,Materials
+337,15101010,Materials
+338,15104050,Materials
+339,40203010,Financials
+340,15104050,Materials
+341,40203010,Financials
+342,15102010,Materials
+343,25101020,Consumer Discretionary
+344,40203020,Financials
+345,25201040,Consumer Discretionary
+346,15104050,Materials
+347,,
+348,15104050,Materials
+349,25301040,Consumer Discretionary
+350,35202010,Health Care
+351,45101010,Information Technology
+352,30301010,Consumer Staples
+353,20103010,Industrials
+354,30202030,Consumer Staples
+355,40202010,Financials
+356,20102010,Industrials
+357,20103010,Industrials
+358,15104050,Materials
+359,15101010,Materials
+360,40101010,Financials
+361,40101010,Financials
+362,40101010,Financials
+363,30202010,Consumer Staples
+364,30202010,Consumer Staples
+365,30202010,Consumer Staples
+366,20103010,Industrials
+367,15101010,Materials
+368,25101020,Consumer Discretionary
+369,20302010,Industrials
+370,20106020,Industrials
+371,15104050,Materials
+372,20106020,Industrials
+373,25203010,Consumer Discretionary
+374,,
+375,40101010,Financials
+376,,
+377,45103020,Information Technology
+378,25203010,Consumer Discretionary
+379,30202030,Consumer Staples
+380,55101010,Utilities
+381,25203030,Consumer Discretionary
+382,20107010,Industrials
+383,30202030,Consumer Staples
+384,40201020,Financials
+385,25201050,Consumer Discretionary
+386,30202010,Consumer Staples
+387,20106020,Industrials
+388,40101010,Financials
+389,20103010,Industrials
+390,20103010,Industrials
+391,40102010,Financials
+392,15101040,Materials
+393,35202010,Health Care
+394,40202010,Financials
+395,20103010,Industrials
+396,55102010,Utilities
+397,50101020,Telecommunication Services
+398,15104050,Materials
+399,25102010,Consumer Discretionary
+400,25101010,Consumer Discretionary
+401,25301020,Consumer Discretionary
+402,60102030,Real Estate
+403,40202010,Financials
+404,40202010,Financials
+405,30302010,Consumer Staples
+406,35202010,Health Care
+407,25102010,Consumer Discretionary
+408,45102010,Information Technology
+409,,
+410,40301020,Financials
+411,35102020,Health Care
+412,30202030,Consumer Staples
+413,20303010,Industrials
+414,35202010,Health Care
+415,45301020,Information Technology
+416,45102010,Information Technology
+417,15104050,Materials
+418,15104050,Materials
+419,15104050,Materials
+420,15101030,Materials
+421,45202030,Information Technology
+422,25101010,Consumer Discretionary
+423,40203030,Financials
+424,45102010,Information Technology
+425,25101020,Consumer Discretionary
+426,40203040,Financials
+427,40202010,Financials
+428,20103010,Industrials
+429,15101030,Materials
+430,35102020,Health Care
+431,35202010,Health Care
+432,20105010,Industrials
+433,20105010,Industrials
+434,20305030,Industrials
+435,25401040,Consumer Discretionary
+436,45201020,Information Technology
+437,30202030,Consumer Staples
+438,25401030,Consumer Discretionary
+439,25401020,Consumer Discretionary
+440,45102010,Information Technology
+441,45103020,Information Technology
+442,,
+443,20305020,Industrials
+444,40203020,Financials
+445,35202010,Health Care
+446,55105010,Utilities
+447,60102030,Real Estate
+448,10102020,Energy
+449,10102020,Energy
+450,45103010,Information Technology
+451,35101010,Health Care
+452,60102030,Real Estate
+453,35202010,Health Care
+454,15102010,Materials
+455,20104010,Industrials
+456,20104010,Industrials
+457,40101010,Financials
+458,15104050,Materials
+459,15104050,Materials
+460,60102030,Real Estate
+461,25203010,Consumer Discretionary
+462,35201010,Health Care
+463,60102010,Real Estate
+464,20103010,Industrials
+465,,
+466,25504040,Consumer Discretionary
+467,60102030,Real Estate
+468,45102010,Information Technology
+469,10102040,Energy
+470,35202010,Health Care
+471,60102010,Real Estate
+472,15101020,Materials
+473,15101020,Materials
+474,20106010,Industrials
+475,35202010,Health Care
+476,40201020,Financials
+477,20103010,Industrials
+478,45102010,Information Technology
+479,40201040,Financials
+480,55101010,Utilities
+481,20103010,Industrials
+482,15104050,Materials
+483,60102030,Real Estate
+484,15102010,Materials
+485,30302010,Consumer Staples
+486,25203010,Consumer Discretionary
+487,40203020,Financials
+488,45203030,Information Technology
+489,20106020,Industrials
+490,55105010,Utilities
+491,40203010,Financials
+492,20103010,Industrials
+493,40101010,Financials
+494,,
+495,25401030,Consumer Discretionary
+496,30201020,Consumer Staples
+497,10102050,Energy
+498,25203010,Consumer Discretionary
+499,15101030,Materials
+500,15102010,Materials
+501,45102010,Information Technology
+502,,
+503,30202030,Consumer Staples
+504,15104050,Materials
+505,25203030,Consumer Discretionary
+506,40101010,Financials
+507,45203030,Information Technology
+508,30202030,Consumer Staples
+509,40201030,Financials
+510,30101030,Consumer Staples
+511,40201020,Financials
+512,50102010,Telecommunication Services
+513,10102040,Energy
+514,10102040,Energy
+515,10102030,Energy
+516,55101010,Utilities
+517,,
+518,,
+519,,
+520,55105010,Utilities
+521,40203020,Financials
+522,40202010,Financials
+523,25101010,Consumer Discretionary
+524,45202030,Information Technology
+525,25501010,Consumer Discretionary
+526,45102010,Information Technology
+527,30202030,Consumer Staples
+528,40201040,Financials
+529,15101050,Materials
+530,25203030,Consumer Discretionary
+531,20103010,Industrials
+532,20107010,Industrials
+533,35202010,Health Care
+534,,
+535,20104010,Industrials
+536,40202010,Financials
+537,35202010,Health Care
+538,15101030,Materials
+539,,
+540,,
+541,35202010,Health Care
+542,20303010,Industrials
+543,10102020,Energy
+544,25503010,Consumer Discretionary
+545,25401030,Consumer Discretionary
+546,15102010,Materials
+547,30202030,Consumer Staples
+548,40202010,Financials
+549,20105010,Industrials
+550,20103010,Industrials
+551,25203030,Consumer Discretionary
+552,25401025,Consumer Discretionary
+553,20106020,Industrials
+554,60102030,Real Estate
+555,15101010,Materials
+556,20102010,Industrials
+557,40101010,Financials
+558,20302010,Industrials
+559,40201020,Financials
+560,25203030,Consumer Discretionary
+561,20107010,Industrials
+562,40101010,Financials
+563,40101010,Financials
+564,40101010,Financials
+565,40101010,Financials
+566,15104050,Materials
+567,35202010,Health Care
+568,10101020,Energy
+569,,
+570,45201020,Information Technology
+571,35202010,Health Care
+572,45103010,Information Technology
+573,15104050,Materials
+574,15104050,Materials
+575,35202010,Health Care
+576,35202010,Health Care
+577,25401020,Consumer Discretionary
+578,40202010,Financials
+579,25101010,Consumer Discretionary
+580,60102010,Real Estate
+581,60102010,Real Estate
+582,15101010,Materials
+583,35202010,Health Care
+584,20104020,Industrials
+585,25203030,Consumer Discretionary
+586,25201040,Consumer Discretionary
+587,40101010,Financials
+588,,
+589,25301020,Consumer Discretionary
+590,45103010,Information Technology
+591,35202010,Health Care
+592,15101020,Materials
+593,30202030,Consumer Staples
+594,50101020,Telecommunication Services
+595,45102010,Information Technology
+596,45103020,Information Technology
+597,,
+598,30202030,Consumer Staples
+599,40203010,Financials
+600,25102010,Consumer Discretionary
+601,25102010,Consumer Discretionary
+602,55101010,Utilities
+603,15104050,Materials
+604,50102010,Telecommunication Services
+605,45102010,Information Technology
+606,,
+607,60102020,Real Estate
+608,20106010,Industrials
+609,20106020,Industrials
+610,25301020,Consumer Discretionary
+611,40201040,Financials
+612,15103010,Materials
+613,20106020,Industrials
+614,25203010,Consumer Discretionary
+615,35202010,Health Care
+616,55101010,Utilities
+617,25503010,Consumer Discretionary
+618,20106020,Industrials
+619,30202030,Consumer Staples
+620,20104020,Industrials
+621,25201040,Consumer Discretionary
+622,25101010,Consumer Discretionary
+623,50101010,Telecommunication Services
+624,25203030,Consumer Discretionary
+625,25401020,Consumer Discretionary
+626,25401020,Consumer Discretionary
+627,25102020,Consumer Discretionary
+628,40101010,Financials
+629,15103020,Materials
+630,15102010,Materials
+631,35202010,Health Care
+632,40101010,Financials
+633,60102030,Real Estate
+634,30201010,Consumer Staples
+635,30201010,Consumer Staples
+636,30201020,Consumer Staples
+637,15101030,Materials
+638,15104050,Materials
+639,30201010,Consumer Staples
+640,20107010,Industrials
+641,15104050,Materials
+642,,
+643,20104010,Industrials
+644,25203010,Consumer Discretionary
+645,55104010,Utilities
+646,25203010,Consumer Discretionary
+647,45102020,Information Technology
+648,25203030,Consumer Discretionary
+649,20303010,Industrials
+650,15104020,Materials
+651,25201010,Consumer Discretionary
+652,40101010,Financials
+653,15101050,Materials
+654,20103010,Industrials
+655,20304020,Industrials
+656,25101010,Consumer Discretionary
+657,15104050,Materials
+658,25203030,Consumer Discretionary
+659,25203030,Consumer Discretionary
+660,25201040,Consumer Discretionary
+661,45102010,Information Technology
+662,35202010,Health Care
+663,,
+664,40101010,Financials
+665,60102030,Real Estate
+666,25401020,Consumer Discretionary
+667,25401020,Consumer Discretionary
+668,45103010,Information Technology
+669,15101030,Materials
+670,20105010,Industrials
+671,30202030,Consumer Staples
