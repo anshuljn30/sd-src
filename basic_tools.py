@@ -4,6 +4,12 @@ import datetime
 from pandas.tseries.offsets import *
 import xlwings as xw
 
+def fill_forward(df,column_from):
+    for i in range (0,len(df.index)):
+        for j in range(column_from+1,len(df.columns)):
+            if(df.ix[i,j] == None): df.ix[i,j] = df.ix[i,j-1]
+    return df
+
 def write_to_sheet(df, file, sheet,open_excel):
     if (open_excel==False):
         app = xw.App(visible=False)
