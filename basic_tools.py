@@ -12,7 +12,7 @@ def random_frame():
     return data
 
 
-def convert_to(data, frequency):
+def convert_to(data, frequency,format):
     dates = data.index
     start_date = dates.min()
     end_date = dates.max()
