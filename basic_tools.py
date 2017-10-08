@@ -1,4 +1,4 @@
-
+import numpy as np
 import pandas as pd
 import datetime
 from pandas.tseries.offsets import *
@@ -12,14 +12,15 @@ def random_frame():
     return data
 
 
-def convert_to(data, frequency,format):
-    dates = data.index
+def convert_to(data, frequency):
+    data.columns = pd.to_datetime(data.columns)
+    dates = data.columns
     start_date = dates.min()
     end_date = dates.max()
 
     dates = pd.date_range(start_date, end_date, freq=frequency.lower())
-    data = data.reindex(dates)
-    data = data.ffill()
+    data = data.reindex_axis(dates, axis=1)
+    data = data.ffill(axis=1)
     return data
 
 def fill_forward(df,column_from):
