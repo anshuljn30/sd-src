@@ -15,7 +15,7 @@ file = "C:\Investment_research\signal_test.xlsx"
 
 signal_test_tools.signal_test_write_returns(scores,returns,nmon,file,False)
 
-signal_test_tools.signal_test_write_ic(scores,returns,sector,nmon,file,open)
+signal_test_tools.signal_test_write_ic(scores,returns,sector,nmon,file,False)
 
-
+signal_test_tools.signal_test_write_coverage_turnover(scores,sector,5,True,file,open)
 

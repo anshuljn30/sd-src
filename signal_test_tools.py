@@ -84,3 +84,31 @@ def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     correlation_write = pd.merge(correlation_write, sector_correlation, on=None,left_index=True, right_index=True, how='outer')
     basic_tools.write_to_sheet(correlation_write, file, 'IC', open)
 
+def coverage_data(scores,sector,fractile,by_sector):
+    quintile = scores.loc[:,['id']]
+    for i in range(1, len(scores.columns)):
+        score_loc = scores.loc[:,['id', scores.columns[i]]]
+        quintile[scores.columns[i]] = pd.DataFrame(list(pd.qcut(score_loc[scores.columns[i]],fractile,labels=False,retbins=True)[0:1])).T
+    if(by_sector==True):
+        quintile2 = pd.merge(quintile, sector[['issuer_id','gics_sector']], left_on='id', right_on = 'issuer_id', how = 'inner')
+        return quintile2.groupby(['gics_sector']).count().T, quintile
+    else: return quintile.count(), quintile
+
+def turnover_quintile(scores,quintile):
+    to = pd.DataFrame(columns=[['date','Q1','Q2','Q3','Q4','Q5']])
+    for i in range(2,len(scores.columns)):
+        date = quintile.columns[i]
+        date_prev = quintile.columns[i-1]
+        to.at[i - 1, 'date'] = date
+        to.at[i-1,'Q1']= 1- (len(quintile.index[quintile[date]==0].intersection(quintile.index[quintile[date_prev]==0]))/len(quintile.index[quintile[date]==0]))
+        to.at[i-1,'Q2']= 1- (len(quintile.index[quintile[date]==1].intersection(quintile.index[quintile[date_prev]==1]))/ len(quintile.index[quintile[date] == 1]))
+        to.at[i-1,'Q3']= 1 - (len(quintile.index[quintile[date]==2].intersection(quintile.index[quintile[date_prev]==2]))/ len(quintile.index[quintile[date] == 2]))
+        to.at[i-1,'Q4']= 1 - (len(quintile.index[quintile[date]==3].intersection(quintile.index[quintile[date_prev]==3]))/ len(quintile.index[quintile[date] == 3]))
+        to.at[i-1,'Q5']= 1 - (len(quintile.index[quintile[date]==4].intersection(quintile.index[quintile[date_prev]==4]))/ len(quintile.index[quintile[date] == 4]))
+    return to
+
+def signal_test_write_coverage_turnover(scores,sector,fractile,by_sector,file,open):
+    (coverage,quintile) = coverage_data(scores,sector,fractile,by_sector)
+    turnover = turnover_quintile(scores,quintile)
+    basic_tools.write_to_sheet(coverage, file, 'coverage', False)
+    basic_tools.write_to_sheet(turnover, file, 'TO', open)
