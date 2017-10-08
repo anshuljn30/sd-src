@@ -23,6 +23,7 @@ def convert_to(data, frequency):
     data = data.ffill(axis=1)
     return data
 
+
 def fill_forward(df,column_from):
     for i in range (0,len(df.index)):
         for j in range(column_from+1,len(df.columns)):
