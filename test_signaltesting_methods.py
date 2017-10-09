@@ -8,10 +8,13 @@ import basic_tools
 
 open = True
 nmon = 1
-scores = pd.read_csv("C:/Investment_research/scores.csv", sep=',')
-returns = pd.read_csv("C:/Investment_research/returns.csv", sep=',')
-sector = pd.read_csv("C:/Investment_research/data/data_base_static/issuer_master_sector.csv",sep=',')
+scores = pd.read_csv("C:/Investment_research/scores.csv", index_col='ids')
+returns = pd.read_csv("C:/Investment_research/returns.csv", index_col='ids')
+sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv",sep=',')
 file = "C:\Investment_research\signal_test.xlsx"
+
+scores = basic_tools.convert_to(scores,'m')
+returns = basic_tools.convert_to(returns,'m')
 
 signal_test_tools.signal_test_write_returns(scores,returns,nmon,file,False)
 

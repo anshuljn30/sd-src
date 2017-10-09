@@ -14,7 +14,10 @@ df['dates'] = basic_tools.eom(df['dates'],"%Y%m%d")
 df = df.drop_duplicates(['ids','dates'],keep='last')
 df = df.pivot(index='ids',columns='dates',values='numeric_value')
 
-df = basic_tools.fill_forward(df,0)
+df = basic_tools.convert_to(df,'m')
+
+
+
 
 
 
