@@ -67,6 +67,7 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
     fractile_returns_write = pd.merge(quintile_returns, decile_returns, on=None,left_index=True, right_index=True, how='outer')
     basic_tools.write_to_sheet(fractile_returns_write, file, 'returns', open)
 
+
 def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     for k in range(1,13):
         if (k==1): universe_correlation = fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False)
