@@ -42,7 +42,10 @@ def fractile_returns_df(scores, returns, fractile, nmon):
         date = scores.columns[i] + relativedelta(months=nmon)
         returns_date = datetime(date.year, date.month, calendar.monthrange(date.year, date.month)[1], 0, 0)
         scores_loc = scores.loc[:, [scores.columns[i]]]
-        returns_loc = returns.loc[:, [returns_date]]
+        if (returns_date in returns.columns):
+            returns_loc = returns.loc[:, [returns_date]]
+        else:
+            returns_loc = pd.DataFrame(np.nan, index=returns.index, columns=[returns_date])
         if (i==0): fractile_returns_df = fractile_returns(scores_loc, returns_loc, fractile)
         else: fractile_returns_df = pd.concat([fractile_returns_df, fractile_returns(scores_loc, returns_loc, fractile)])
     return fractile_returns_df
@@ -54,8 +57,11 @@ def fractile_correlation_df(scores, returns, sector, fractile, nmon, by_sector):
         returns_date = datetime(date.year, date.month, calendar.monthrange(date.year, date.month)[1], 0, 0)
         scores_loc = scores.loc[:, [scores.columns[i]]]
         scores_loc = pd.merge(scores_loc,sector[['ids','gics_sector']],left_index=True,right_on='ids',how='left')
-        returns_loc = returns.loc[:, [returns_date]]
-        if (i==1): fractile_correlation_df = fractile_correlation(scores_loc, returns_loc, fractile, by_sector)
+        if (returns_date in returns.columns):
+            returns_loc = returns.loc[:, [returns_date]]
+        else:
+            returns_loc = pd.DataFrame(np.nan, index=returns.index, columns=[returns_date])
+        if (i==0): fractile_correlation_df = fractile_correlation(scores_loc, returns_loc, fractile, by_sector)
         else: fractile_correlation_df = pd.concat([fractile_correlation_df, fractile_correlation(scores_loc, returns_loc, fractile, by_sector)])
     return fractile_correlation_df
 
@@ -71,11 +77,11 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
 def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     for k in range(1,13):
         if (k==1): universe_correlation = fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False)
-        else: universe_correlation = pd.merge(universe_correlation, fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False), on=None, left_index=True, right_index=True, how='outer')
+        else: universe_correlation = pd.merge(universe_correlation, fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False), left_index=True, right_index=True, how='outer')
     quintile_correlation  = fractile_correlation_df(scores, returns,  sector, 5,nmon, False)
     universe_correlation.columns=[['IC1','IC2','IC3','IC4','IC5','IC6','IC7','IC8','IC9','IC10','IC11','IC12']]
     quintile_correlation.columns=[['q1','q2','q3','q4','q5']]
-    scores_loc = scores.loc[:, [scores.columns[1]]]
+    scores_loc = scores.loc[:, [scores.columns[0]]]
     scores_loc = pd.merge(scores_loc, sector[['ids', 'gics_sector']], left_index=True, right_on='ids', how='left')
     x = list(scores_loc.gics_sector.unique())
     x.sort()
@@ -86,18 +92,18 @@ def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     basic_tools.write_to_sheet(correlation_write, file, 'IC', open)
 
 def coverage_data(scores,sector,fractile,by_sector):
-    quintile = scores.loc[:,['id']]
-    for i in range(1, len(scores.columns)):
-        score_loc = scores.loc[:,['id', scores.columns[i]]]
+    quintile = scores.loc[:,[scores.columns[0]]]
+    for i in range(0, len(scores.columns)):
+        score_loc = scores.loc[:,[scores.columns[i]]]
         quintile[scores.columns[i]] = pd.DataFrame(list(pd.qcut(score_loc[scores.columns[i]],fractile,labels=False,retbins=True)[0:1])).T
     if(by_sector==True):
-        quintile2 = pd.merge(quintile, sector[['issuer_id','gics_sector']], left_on='id', right_on = 'issuer_id', how = 'inner')
+        quintile2 = pd.merge(quintile, sector[['ids','gics_sector']], left_index=True, right_on = 'ids', how = 'inner')
         return quintile2.groupby(['gics_sector']).count().T, quintile
     else: return quintile.count(), quintile
 
 def turnover_quintile(scores,quintile):
     to = pd.DataFrame(columns=[['date','Q1','Q2','Q3','Q4','Q5']])
-    for i in range(2,len(scores.columns)):
+    for i in range(1,len(scores.columns)):
         date = quintile.columns[i]
         date_prev = quintile.columns[i-1]
         to.at[i - 1, 'date'] = date
