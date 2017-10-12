@@ -3,7 +3,7 @@ import basic_tools
 import pandas as pd
 
 
-def get_raw_data(item_name, daterange, issuer_id):
+def get_raw_data(item_name, daterange, ids):
     # figure out the item_id & table_name
     sql_references = get_sql_references(item_name)
 
@@ -17,15 +17,15 @@ def get_raw_data(item_name, daterange, issuer_id):
     if table_name == 'fundamental':
         from_date = from_date - pd.DateOffset(years=2)  # Go back 2 years for fundamental data for interpolation
         periodicity = 1
-        data = db_tools.get_fundamental_data(issuer_id, item_id, periodicity, from_date, to_date, db_tools.connect_db())
+        data = db_tools.get_fundamental_data(ids, item_id, periodicity, from_date, to_date, db_tools.connect_db())
 
     elif table_name == 'market':
         periodicity = 365
-        data = db_tools.get_market_data(issuer_id, item_id, periodicity, from_date, to_date, db_tools.connect_db())
+        data = db_tools.get_market_data(ids, item_id, periodicity, from_date, to_date, db_tools.connect_db())
     elif table_name == 'estimate':
         periodicity = 1
         fill = False
-        data = db_tools.get_estimate_data(issuer_id, item_id, periodicity, from_date, to_date, db_tools.connect_db())
+        data = db_tools.get_estimate_data(ids, item_id, periodicity, from_date, to_date, db_tools.connect_db())
     else:
         raise ValueError('Known table name in sql database')
 
@@ -36,7 +36,7 @@ def get_raw_data(item_name, daterange, issuer_id):
     data = data.pivot(index='dates', columns='ids', values='numeric_value')
     data = basic_tools.convert_to(data, 'd')
     data = basic_tools.convert_to(data, daterange.freqstr[0])
-    data = data.reindex(index=daterange, columns = issuer_id)
+    data = data.reindex(index=daterange, columns = ids)
 
     return data
 
