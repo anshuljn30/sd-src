@@ -1,28 +1,22 @@
-import numpy as np
+
 import pandas as pd
 import datetime
 from pandas.tseries.offsets import *
 import xlwings as xw
+import numpy as np
 
 
-def random_frame():
-    dates = pd.date_range('20050101', '20060101', freq='d')
-    data_matrix = np.random.randint(0, 100, size=(366, 5))
-    data = pd.DataFrame(data_matrix, index=dates)
+def random_frame(ndates, nids):
+    dates = pd.date_range('20140131', periods=ndates, freq='m')
+    ids = list(range(1,nids+1))
+    data_matrix = np.random.randint(0, 100, size=(ndates, nids))/100
+    data = pd.DataFrame(data_matrix, index=dates, columns=ids)
     return data
 
 
 def convert_to(data, frequency):
-    data.columns = pd.to_datetime(data.columns)
-    dates = data.columns
-    start_date = dates.min()
-    end_date = dates.max()
-
-    dates = pd.date_range(start_date, end_date, freq=frequency.lower())
-    data = data.reindex_axis(dates, axis=1)
-    data = data.ffill(axis=1)
+    data = data.asfreq(frequency.lower(), method='ffill')
     return data
-
 
 def fill_forward(df,column_from):
     for i in range (0,len(df.index)):
