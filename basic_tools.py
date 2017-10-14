@@ -1,27 +1,33 @@
-import numpy as np
+
 import pandas as pd
 import datetime
 from pandas.tseries.offsets import *
 import xlwings as xw
+import numpy as np
+import db_tools as dt
+import clean_data_tools as cdt
 
 
-def random_frame():
-    dates = pd.date_range('20050101', '20060101', freq='d')
-    data_matrix = np.random.randint(0, 100, size=(366, 5))
-    data = pd.DataFrame(data_matrix, index=dates)
+def random_frame(ndates, nids):
+    dates = pd.date_range('20140131', periods=ndates, freq='m')
+    ids = list(range(1,nids+1))
+    data_matrix = np.random.randint(0, 100, size=(ndates, nids))/100
+    data = pd.DataFrame(data_matrix, index=dates, columns=ids)
     return data
 
 
 def convert_to(data, frequency):
-    data.columns = pd.to_datetime(data.columns)
-    dates = data.columns
-    start_date = dates.min()
-    end_date = dates.max()
-
-    dates = pd.date_range(start_date, end_date, freq=frequency.lower())
-    data = data.reindex_axis(dates, axis=1)
-    data = data.ffill(axis=1)
+    data = data.asfreq(frequency.lower(), method='ffill')
     return data
+
+
+def get_universe(dates):
+    ids = dt.get_all_security_ids()
+    mcap = cdt.get_clean_data('SecurityMcapUsd', dates, ids)
+    volume = cdt.get_clean_data('ADV', dates, ids, 90)
+    universe = (mcap > 1e6) & (volume > 1e4)
+    universe = universe.loc[:, universe.any(axis=0)]   # trim ids which were never in the universe
+    return universe
 
 
 def fill_forward(df,column_from):
@@ -29,6 +35,7 @@ def fill_forward(df,column_from):
         for j in range(column_from+1,len(df.columns)):
             if(df.ix[i,j] == None): df.ix[i,j] = df.ix[i,j-1]
     return df
+
 
 def write_to_sheet(df, file, sheet,open_excel):
     if (open_excel==False):
@@ -41,11 +48,13 @@ def write_to_sheet(df, file, sheet,open_excel):
     if (open_excel==False):
         wb.close()
 
+
 def eom(df,format):
     df = pd.to_datetime(df, format=format)
     df = df.apply(lambda x: x + pd.offsets.MonthEnd(0))
     df = df.apply(lambda x: x.strftime(format))
     return df
+
 
 def eomb(df,format):
     df = pd.to_datetime(df, format=format)
@@ -54,11 +63,13 @@ def eomb(df,format):
     df = df.apply(lambda x: x.strftime(format))
     return df
 
+
 def eoq(df,format):
     df = pd.to_datetime(df, format=format)
     df = df.apply(lambda x: x + pd.offsets.QuarterEnd(0))
     df = df.apply(lambda x: x.strftime(format))
     return df
+
 
 def eoqb(df,format):
     df = pd.to_datetime(df, format=format)
@@ -67,11 +78,13 @@ def eoqb(df,format):
     df = df.apply(lambda x: x.strftime(format))
     return df
 
+
 def eoy(df,format):
     df = pd.to_datetime(df, format=format)
     df = df.apply(lambda x: x + pd.offsets.YearEnd(0))
     df = df.apply(lambda x: x.strftime(format))
     return df
+
 
 def eoyb(df,format):
     df = pd.to_datetime(df, format=format)
