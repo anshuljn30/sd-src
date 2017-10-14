@@ -42,6 +42,7 @@ def write_to_sheet(df, file, sheet,open_excel):
         app = xw.App(visible=False)
     wb = xw.Book(file)
     sht = wb.sheets[sheet]
+    sht.clear_contents()
     sht.range('A1').value = df
     sht.range('A1').options(pd.DataFrame, expand='table').value
     wb.save()
