@@ -41,6 +41,7 @@ def write_to_sheet(df, file, sheet,open_excel):
     if (open_excel==False):
         app = xw.App(visible=False)
     wb = xw.Book(file)
+    wb.app.display_alerts = False
     sht = wb.sheets[sheet]
     sht.clear()
     sht.range('A1').value = df
