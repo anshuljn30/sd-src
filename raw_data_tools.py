@@ -12,32 +12,40 @@ def get_raw_data(item_name, daterange, ids):
     to_date = daterange[-1]
     table_name = sql_references[0]
     item_id = sql_references[1]
+    if type(ids) is not list: ids = list([ids])
 
     # Run the SQL query to load the fundamental data
     if table_name == 'fundamental':
         from_date = from_date - pd.DateOffset(years=2)  # Go back 2 years for fundamental data for interpolation
         periodicity = 1
+        fill_limit = 730     # Forward fill for 2 years as we only have annual data
         data = db_tools.get_fundamental_data(ids, item_id, periodicity, from_date, to_date, db_tools.connect_db())
 
     elif table_name == 'market':
         periodicity = 365
+        fill_limit = 5      # Forward fill for 5 days to cover any holidays or missing data
         data = db_tools.get_market_data(ids, item_id, periodicity, from_date, to_date, db_tools.connect_db())
+
     elif table_name == 'estimate':
         periodicity = 1
-        fill = False
+        fill_limit = 0
         data = db_tools.get_estimate_data(ids, item_id, periodicity, from_date, to_date, db_tools.connect_db())
     else:
         raise ValueError('Known table name in sql database')
 
-    # Convert to Data frame
-    data = data.drop_duplicates(['ids', 'dates'], keep='last')
+    # Clean and convert to data frame
+    data['dates'] = pd.to_datetime(data['dates'], format="%Y%m%d")
     data.ids = data.ids.astype(int)
     data.numeric_value = data.numeric_value.astype(float)
+    data = data.drop_duplicates(['dates', 'ids'], keep='last')
     data = data.pivot(index='dates', columns='ids', values='numeric_value')
+    data = data.reindex(index=data.index.union([from_date]).union([to_date]))  # Make sure data frame is bounded
     data = basic_tools.convert_to(data, 'd')
-    data = basic_tools.convert_to(data, daterange.freqstr[0])
-    data = data.reindex(index=daterange, columns = ids)
+    data = data.ffill(limit=fill_limit)
 
+    # Reindex back to requested dates and ids
+    data = basic_tools.convert_to(data, daterange.freqstr[0])
+    data = data.reindex(index=daterange, columns=ids)
     return data
 
 

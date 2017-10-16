@@ -25,7 +25,7 @@ def get_universe(dates):
     ids = dt.get_all_security_ids()
     mcap = cdt.get_clean_data('SecurityMcapUsd', dates, ids)
     volume = cdt.get_clean_data('ADV', dates, ids, 90)
-    universe = (mcap > 1e6) & (volume > 1e4)
+    universe = (mcap > 1e5) & (volume > 1e4)
     universe = universe.loc[:, universe.any(axis=0)]   # trim ids which were never in the universe
     return universe
 

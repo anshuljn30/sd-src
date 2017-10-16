@@ -1,10 +1,10 @@
 import clean_data_tools as cdt
-import raw_data_tools as rdt
 import pandas as pd
-import matplotlib.pyplot as plt
 import basic_tools as bt
-import portfolio as port
+import portfolio as p
 
-dates = pd.date_range('20140131', '20141231', freq='m')
+dates = pd.date_range('20141031', '20141130', freq='d')
+#ids = list(bt.get_universe(dates))
 ids = list(range(1,10))
-universe = bt.get_universe(dates)
+eps = cdt.get_clean_data('PriceUsdAdj', dates, ids)
+print(eps)
