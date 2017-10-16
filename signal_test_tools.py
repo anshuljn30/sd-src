@@ -6,9 +6,11 @@ from dateutil.relativedelta import relativedelta
 import signal_test_tools
 import basic_tools
 
+## Jitter will add noise to the data, to avoid a tie in case of splitting data into fractiles
 def jitter(series, noise_reduction=100000000):
     return (np.random.random(len(series))*series.std()/noise_reduction)-(series.std()/(2*noise_reduction))
 
+## this method will return fractile returns per cross section
 def fractile_returns(scores, returns, fractile):
     date_scores = scores.columns[0]
     date_returns = returns.columns[0]
@@ -19,6 +21,7 @@ def fractile_returns(scores, returns, fractile):
     fractile_returns.columns = [date_scores]
     return fractile_returns.T
 
+## this method will return fractile correlation per cross section, and also correlation by sector if by_sector is set a True
 def fractile_correlation(scores, returns, fractile,by_sector):
     date_scores = scores.columns[0]
     date_returns = returns.columns[0]
@@ -36,7 +39,7 @@ def fractile_correlation(scores, returns, fractile,by_sector):
     fractile_correlation.columns = [date_scores]
     return fractile_correlation.T
 
-
+## this method will return a data frame of fractile returns when a data frame of scores and returns are passsed.
 def fractile_returns_df(scores, returns, fractile, nmon):
     for i in range(0, len(scores.columns)):
         date = scores.columns[i] + relativedelta(months=nmon)
@@ -50,7 +53,8 @@ def fractile_returns_df(scores, returns, fractile, nmon):
         else: fractile_returns_df = pd.concat([fractile_returns_df, fractile_returns(scores_loc, returns_loc, fractile)])
     return fractile_returns_df
 
-
+## this method will return a data frame of fractile correlatons when a data frame of score, returns are passed.
+## Also correlation by sector is returned if by_sector is set as True.
 def fractile_correlation_df(scores, returns, sector, fractile, nmon, by_sector):
     for i in range(0, len(scores.columns)):
         date = scores.columns[i] + relativedelta(months=nmon)
@@ -65,6 +69,8 @@ def fractile_correlation_df(scores, returns, sector, fractile, nmon, by_sector):
         else: fractile_correlation_df = pd.concat([fractile_correlation_df, fractile_correlation(scores_loc, returns_loc, fractile, by_sector)])
     return fractile_correlation_df
 
+
+## This method will return returns data required for the signal testing template
 def signal_test_write_returns(scores,returns,nmon,file,open):
     quintile_returns  = fractile_returns_df(scores, returns, 5,nmon)
     decile_returns =  fractile_returns_df(scores, returns, 10,nmon)
@@ -80,7 +86,7 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
     basic_tools.write_to_sheet(fractile_returns_write, file, 'returns', False)
     basic_tools.write_to_sheet(returns_calc, file, 'return_calc', open)
 
-
+## This method will return correlation data required for signal testing template
 def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     for k in range(1,13):
         if (k==1): universe_correlation = fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False)
@@ -98,6 +104,7 @@ def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     correlation_write = pd.merge(correlation_write, sector_correlation, on=None,left_index=True, right_index=True, how='outer')
     basic_tools.write_to_sheet(correlation_write, file, 'IC', open)
 
+## This method calculates coverage information
 def coverage_data(scores,sector,fractile,by_sector):
     quintile = scores.loc[:,[scores.columns[0]]]
     for i in range(0, len(scores.columns)):
@@ -113,6 +120,7 @@ def coverage_data(scores,sector,fractile,by_sector):
         return x, quintile
     else: return quintile.count(), quintile
 
+## This method will calculate turnover of the quintiles.
 def turnover_quintile(scores,quintile):
     to = pd.DataFrame(columns=[['date','Q1','Q2','Q3','Q4','Q5']])
     for i in range(1,len(scores.columns)):
@@ -126,6 +134,7 @@ def turnover_quintile(scores,quintile):
         to.at[i-1,'Q5']= 1 - (len(quintile.index[quintile[date]==4].intersection(quintile.index[quintile[date_prev]==4]))/ len(quintile.index[quintile[date] == 4]))
     return to
 
+## This method is useful for writing coverage and turnover data to signal testing template.
 def signal_test_write_coverage_turnover(scores,sector,fractile,by_sector,file,open):
     (coverage,quintile) = coverage_data(scores,sector,fractile,by_sector)
     turnover = turnover_quintile(scores,quintile)
