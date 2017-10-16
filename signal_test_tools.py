@@ -71,7 +71,14 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
     quintile_returns.columns=[['q1','q2','q3','q4','q5']]
     decile_returns.columns = [['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10']]
     fractile_returns_write = pd.merge(quintile_returns, decile_returns, on=None,left_index=True, right_index=True, how='outer')
-    basic_tools.write_to_sheet(fractile_returns_write, file, 'returns', open)
+    returns_calc = pd.DataFrame(index=fractile_returns_write.index)
+    returns_calc['universe'] = fractile_returns_write[['q1', 'q2', 'q3', 'q4', 'q5']].mean(axis=1)
+    returns_calc['qspread'] = fractile_returns_write['q1'] - fractile_returns_write['q5']
+    returns_calc['q1excess'] = fractile_returns_write['q1'] - returns_calc['universe']
+    returns_calc['dspread'] = fractile_returns_write['d1'] - fractile_returns_write['d10']
+    returns_calc['d1excess'] = fractile_returns_write['d1'] - returns_calc['universe']
+    basic_tools.write_to_sheet(fractile_returns_write, file, 'returns', False)
+    basic_tools.write_to_sheet(returns_calc, file, 'return_calc', open)
 
 
 def signal_test_write_ic(scores,returns,sector,nmon,file,open):
@@ -97,8 +104,13 @@ def coverage_data(scores,sector,fractile,by_sector):
         score_loc = scores.loc[:,[scores.columns[i]]]
         quintile[scores.columns[i]] = pd.DataFrame(list(pd.qcut(score_loc[scores.columns[i]],fractile,labels=False,retbins=True)[0:1])).T
     if(by_sector==True):
-        quintile2 = pd.merge(quintile, sector[['ids','gics_sector']], left_index=True, right_on = 'ids', how = 'inner')
-        return quintile2.groupby(['gics_sector']).count().T, quintile
+        quintile = pd.merge(quintile, sector[['ids','gics_sector']], left_index=True, right_on = 'ids', how = 'inner')
+        x = quintile.groupby(['gics_sector']).count().T
+        x['coverage']  = x.sum(axis=1)
+        cols = list(x.columns)
+        cols.insert(0, cols.pop(cols.index('coverage')))
+        x = x.reindex(columns=cols)
+        return x, quintile
     else: return quintile.count(), quintile
 
 def turnover_quintile(scores,quintile):

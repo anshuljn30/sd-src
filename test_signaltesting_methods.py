@@ -13,8 +13,11 @@ returns = pd.read_csv("C:/Investment_research/returns.csv", index_col='ids')
 sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv",sep=',')
 file = "C:\Investment_research\signal_test.xlsx"
 
-scores = basic_tools.convert_to(scores,'m')
-returns = basic_tools.convert_to(returns,'m')
+scores.columns = pd.to_datetime(scores.columns)
+returns.columns = pd.to_datetime(returns.columns)
+
+#scores1 = basic_tools.convert_to(scores,'d')
+#returns = basic_tools.convert_to(returns,'m')
 
 signal_test_tools.signal_test_write_returns(scores,returns,nmon,file,False)
 
