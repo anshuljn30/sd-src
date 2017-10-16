@@ -1,5 +1,6 @@
 import pgdb
 import pandas as pd
+import basic_tools
 
 
 def connect_db():
@@ -23,10 +24,10 @@ def get_fundamental_data(issuer_id, item_id, periodicity, from_date, to_date, db
         "AND to_date(start_date, 'YYYYMMDD') >= to_date('" + str(from_date) + "','YYYYMMDD') " \
         "AND to_date(start_date, 'YYYYMMDD') <= to_date('" + str(to_date) + "','YYYYMMDD') " \
         "AND rank = 1"
-    df = pd.read_sql(sql, db)
-    df = df.rename(columns={'start_date': 'dates', 'issuer_id': 'ids'})
-    df['dates'] = pd.to_datetime(df['dates'], format="%Y%m%d")
-    return df
+    data = pd.read_sql(sql, db)
+
+    data = data.rename(columns={'start_date': 'dates', 'issuer_id': 'ids'})
+    return data
 
 
 def get_market_data(security_id, item_id, periodicity, from_date, to_date, db):
@@ -40,15 +41,15 @@ def get_market_data(security_id, item_id, periodicity, from_date, to_date, db):
           "AND periodicity_id = '" + str(periodicity) + "' " \
           "AND to_date(start_date, 'YYYYMMDD') >= to_date('" + str(from_date) + "','YYYYMMDD') " \
           "AND to_date(start_date, 'YYYYMMDD') <= to_date('" + str(to_date) + "','YYYYMMDD') "
-    df = pd.read_sql(sql, db)
-    df = df.rename(columns={'start_date': 'dates', 'security_id': 'ids'})
-    df['dates'] = pd.to_datetime(df['dates'], format="%Y%m%d")
+    data = pd.read_sql(sql, db)
 
-    return df
+    data = data.rename(columns={'start_date': 'dates', 'security_id': 'ids'})
+    return data
 
 
 def company(issuer_id):
     db = connect_db()
+    if type(issuer_id) is not list: issuer_id = list([issuer_id])
     issuer_id = ', '.join(["'{}'".format(value) for value in issuer_id])
     sql = "SELECT issuer_id, issuer_name " \
           "FROM issuer_master " \

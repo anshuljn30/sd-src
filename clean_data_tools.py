@@ -15,15 +15,11 @@ def get_clean_data(item_name, dates, ids, *args):
     return data
 
 
-def get_ebit(dates, ids):
-    data = rdt.get_raw_data('EBIT', dates, ids)
-    return data
-
-
 def get_returnusd(dates, ids):
     new_dates = dates.union([dates[0]-1])   # Go back one period
     price = get_clean_data('PriceUsdAdj', new_dates, ids)
     data = 1 + price.pct_change()
+    data = data.fillna(1)
     data = data.reindex(index=dates)
     return data
 
@@ -32,6 +28,7 @@ def get_returnlocal(dates, ids):
     new_dates = dates.union([dates[0]-1])    # Go back one period
     price = get_clean_data('PriceLocalAdj', new_dates, ids)
     data = 1 + price.pct_change()
+    data = data.fillna(1)
     data = data.reindex(index=dates)
     return data
 
@@ -60,7 +57,7 @@ def get_adv(dates, ids, ndays):
     # convert dates into daily frequency
     new_dates = pd.date_range(dates.min() - pd.DateOffset(ndays), dates.max(), freq='D')
     volume_usd = get_clean_data('VolumeUsd', new_dates, ids)
-    adv = volume_usd.rolling(window=ndays, min_periods=ndays//2).mean()
+    adv = volume_usd.rolling(axis=0, window=ndays, min_periods=ndays//2).mean()
     adv = adv.reindex(index=dates, columns=ids)
     return adv
 
