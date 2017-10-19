@@ -31,10 +31,12 @@ def fractile_correlation(scores, returns, fractile,by_sector):
     df_returns = returns.loc[:,[date_returns]]
     df_returns = df_returns.rename(columns={date_returns: 'r' + str(date_returns)})
     df = pd.merge(df_scores, df_returns, left_index=True, right_index=True, how='left')
+
     if(by_sector==True):
         fractile_correlation = df.groupby(by='gics_sector')[['s' + str(date_scores), 'r' + str(date_returns)]].corr().ix[0::2,'r' + str(date_returns)]
     else:
         fractile_correlation = df.groupby(by='fractiles')[['s' + str(date_scores), 'r' + str(date_returns)]].corr().ix[0::2,'r' + str(date_returns)]
+
     fractile_correlation = pd.DataFrame(list(fractile_correlation))
     fractile_correlation.columns = [date_scores]
     return fractile_correlation.T
@@ -45,12 +47,17 @@ def fractile_returns_df(scores, returns, fractile, nmon):
         date = scores.columns[i] + relativedelta(months=nmon)
         returns_date = datetime(date.year, date.month, calendar.monthrange(date.year, date.month)[1], 0, 0)
         scores_loc = scores.loc[:, [scores.columns[i]]]
+
         if (returns_date in returns.columns):
             returns_loc = returns.loc[:, [returns_date]]
         else:
             returns_loc = pd.DataFrame(np.nan, index=returns.index, columns=[returns_date])
-        if (i==0): fractile_returns_df = fractile_returns(scores_loc, returns_loc, fractile)
-        else: fractile_returns_df = pd.concat([fractile_returns_df, fractile_returns(scores_loc, returns_loc, fractile)])
+
+        if (scores_loc.count().item() >= 2*fractile):
+            try:
+                fractile_returns_df = pd.concat([fractile_returns_df, fractile_returns(scores_loc, returns_loc, fractile)])
+            except Exception:
+                fractile_returns_df = fractile_returns(scores_loc, returns_loc, fractile)
     return fractile_returns_df
 
 ## this method will return a data frame of fractile correlatons when a data frame of score, returns are passed.
@@ -65,8 +72,13 @@ def fractile_correlation_df(scores, returns, sector, fractile, nmon, by_sector):
             returns_loc = returns.loc[:, [returns_date]]
         else:
             returns_loc = pd.DataFrame(np.nan, index=returns.index, columns=[returns_date])
-        if (i==0): fractile_correlation_df = fractile_correlation(scores_loc, returns_loc, fractile, by_sector)
-        else: fractile_correlation_df = pd.concat([fractile_correlation_df, fractile_correlation(scores_loc, returns_loc, fractile, by_sector)])
+
+        if (scores_loc.count()[0].item() >= 2 * fractile):
+            try:
+                fractile_correlation_df = pd.concat([fractile_correlation_df, fractile_correlation(scores_loc, returns_loc, fractile, by_sector)])
+            except Exception:
+                fractile_correlation_df = fractile_correlation(scores_loc, returns_loc, fractile, by_sector)
+
     return fractile_correlation_df
 
 
@@ -89,14 +101,17 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
 ## This method will return correlation data required for signal testing template
 def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     for k in range(1,13):
-        if (k==1): universe_correlation = fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False)
-        else: universe_correlation = pd.merge(universe_correlation, fractile_correlation_df(scores, returns, sector, 1, k+nmon-1, False), left_index=True, right_index=True, how='outer')
+        try:
+            universe_correlation = pd.merge(universe_correlation, fractile_correlation_df(scores, returns, sector, 1, k + nmon - 1, False),left_index=True, right_index=True, how='outer')
+        except Exception:
+            universe_correlation = fractile_correlation_df(scores, returns, sector, 1, k + nmon - 1, False)
     quintile_correlation  = fractile_correlation_df(scores, returns,  sector, 5,nmon, False)
     universe_correlation.columns=[['IC1','IC2','IC3','IC4','IC5','IC6','IC7','IC8','IC9','IC10','IC11','IC12']]
     quintile_correlation.columns=[['q1','q2','q3','q4','q5']]
     scores_loc = scores.loc[:, [scores.columns[0]]]
     scores_loc = pd.merge(scores_loc, sector[['ids', 'gics_sector']], left_index=True, right_on='ids', how='left')
     x = list(scores_loc.gics_sector.unique())
+    x = [x for x in x if str(x) != 'nan']
     x.sort()
     sector_correlation = fractile_correlation_df(scores, returns, sector, 1, nmon, True)
     sector_correlation.columns = x
@@ -108,8 +123,9 @@ def signal_test_write_ic(scores,returns,sector,nmon,file,open):
 def coverage_data(scores,sector,fractile,by_sector):
     quintile = scores.loc[:,[scores.columns[0]]]
     for i in range(0, len(scores.columns)):
-        score_loc = scores.loc[:,[scores.columns[i]]]
-        quintile[scores.columns[i]] = pd.DataFrame(list(pd.qcut(score_loc[scores.columns[i]],fractile,labels=False,retbins=True)[0:1])).T
+        scores_loc = scores.loc[:,[scores.columns[i]]]
+        if (scores_loc.count().item() >= 2 * fractile):
+            quintile[scores.columns[i]] = pd.DataFrame(list(pd.qcut(scores_loc[scores.columns[i]],fractile,labels=False,retbins=True)[0:1])).T
     if(by_sector==True):
         quintile = pd.merge(quintile, sector[['ids','gics_sector']], left_index=True, right_on = 'ids', how = 'inner')
         x = quintile.groupby(['gics_sector']).count().T

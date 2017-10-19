@@ -5,13 +5,19 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import signal_test_tools
 import basic_tools
+from shutil import copyfile
+
 
 open = True
 nmon = 1
+
 scores = pd.read_csv("C:/Investment_research/scores.csv", index_col='ids')
 returns = pd.read_csv("C:/Investment_research/returns.csv", index_col='ids')
 sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv",sep=',')
+src = "C:\Investment_research\signal_test_template.xlsx"
 file = "C:\Investment_research\signal_test.xlsx"
+copyfile(src, file)
+
 
 scores.columns = pd.to_datetime(scores.columns)
 returns.columns = pd.to_datetime(returns.columns)
