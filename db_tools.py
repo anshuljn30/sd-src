@@ -47,15 +47,44 @@ def get_market_data(security_id, item_id, periodicity, from_date, to_date, db):
     return data
 
 
-def company(issuer_id):
+def get_index_market_data(index_id, item_id, periodicity, from_date, to_date, db):
+    security_id = ', '.join(["'{}'".format(value) for value in index_id])
+    from_date = from_date.strftime('%Y%m%d')
+    to_date = to_date.strftime('%Y%m%d')
+    sql = "SELECT security_id, start_date, numeric_value " \
+          "FROM market_data " \
+          "WHERE security_id IN (" + security_id + ") " \
+          "AND market_item_id = '" + str(item_id) + "' " \
+          "AND periodicity_id = '" + str(periodicity) + "' " \
+          "AND to_date(start_date, 'YYYYMMDD') >= to_date('" + str(from_date) + "','YYYYMMDD') " \
+          "AND to_date(start_date, 'YYYYMMDD') <= to_date('" + str(to_date) + "','YYYYMMDD') "
+    data = pd.read_sql(sql, db)
+
+    data = data.rename(columns={'start_date': 'dates', 'security_id': 'ids'})
+    return data
+
+
+def get_company_reference_data(issuer_id):
     db = connect_db()
     if type(issuer_id) is not list: issuer_id = list([issuer_id])
     issuer_id = ', '.join(["'{}'".format(value) for value in issuer_id])
-    sql = "SELECT issuer_id, issuer_name " \
-          "FROM issuer_master " \
-          "WHERE issuer_id in (" + issuer_id + ")"
+    sql = "SELECT im.issuer_id, im.issuer_name, c.country_name, s.gics_sector_name, " \
+          "ig.gics_industry_group_name, i.gics_industry_name, si.gics_subindustry_name " \
+          "FROM issuer_master im " \
+          "JOIN country c " \
+          "ON im.country_of_domicile = c.country_code " \
+          "JOIN gics_subindustry si " \
+          "ON im.gics_subindustry_id = si.gics_subindustry_id " \
+          "JOIN gics_industry i " \
+          "ON si.gics_industry_id = i.gics_industry_id " \
+          "JOIN gics_industry_group ig " \
+          "ON i.gics_industry_group_id = ig.gics_industry_group_id " \
+          "JOIN gics_sector s " \
+          "ON ig.gics_sector_id = s.gics_sector_id " \
+          "WHERE im.issuer_id in (" + issuer_id + ")"
 
     df = pd.read_sql(sql, db)
+    df['issuer_id'] = df['issuer_id'].astype(int)
     return df
 
 

@@ -6,6 +6,7 @@ import xlwings as xw
 import numpy as np
 import db_tools as dt
 import clean_data_tools as cdt
+import company as c
 
 
 def random_frame(ndates, nids):
@@ -28,6 +29,18 @@ def get_universe(dates):
     universe = (mcap > 1e5) & (volume > 1e4)
     universe = universe.loc[:, universe.any(axis=0)]   # trim ids which were never in the universe
     return universe
+
+
+def aggregate(data, property, func, *args):
+    ids = list(data)
+    company = c.Company(ids)
+    agg_data = data.groupby(by=getattr(company, property), axis=1)
+    if func == 'weighted_mean':
+        w = args[0]
+        func = lambda x: np.average(x, weights=w, axis=1)
+
+    agg_data = agg_data.apply(func)
+    return agg_data
 
 
 def fill_forward(df,column_from):

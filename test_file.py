@@ -3,8 +3,10 @@ import pandas as pd
 import basic_tools as bt
 import portfolio as p
 
-dates = pd.date_range('20141031', '20141130', freq='d')
+dates = pd.date_range('20051231', '20141130', freq='m')
 #ids = list(bt.get_universe(dates))
 ids = list(range(1,10))
-eps = cdt.get_clean_data('PriceUsdAdj', dates, ids)
-print(eps)
+eps = cdt.get_clean_data('EPS', dates, ids)
+cap = cdt.get_clean_data('CompanyMcapUsd', dates, ids)
+eps_sector = bt.aggregate(eps, 'sector', 'weighted_mean', cap)
+print(eps_sector)
