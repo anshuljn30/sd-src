@@ -176,11 +176,11 @@ def run_signal_test(signal_name,dates,ids,dir = "C:\Investment_research\\",nmon=
 
 def zscore_clean(df,axis=0):
     df = df.sub(df.mean(axis=axis), axis=abs(axis-1)).div(df.std(axis=axis), axis=abs(axis-1))
-    df[(df.abs() > 4)] = np.n
+    df[(df.abs() > 4)] = np.nan
     df = df.sub(df.mean(axis=axis), axis=abs(axis - 1)).div(df.std(axis=axis), axis=abs(axis - 1))
-    df[(df.abs() > 4)] = np.n
+    df[(df.abs() > 4)] = np.nan
     df = df.sub(df.mean(axis=axis), axis=abs(axis - 1)).div(df.std(axis=axis), axis=abs(axis - 1))
-    df[(df.abs() > 4)] = np.n
+    df[(df.abs() > 4)] = np.nan
     df[(df.abs() > 3)] = 3
     df = df.sub(df.mean(axis=axis), axis=abs(axis - 1)).div(df.std(axis=axis), axis=abs(axis - 1))
     return df
