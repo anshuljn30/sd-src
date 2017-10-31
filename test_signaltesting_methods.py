@@ -7,20 +7,19 @@ import signal_test_tools
 import basic_tools
 from shutil import copyfile
 
-
+dir = "C:\Investment_research\\"
 open = True
 nmon = 1
 
-scores = pd.read_csv("C:/Investment_research/scores.csv", index_col='ids')
-returns = pd.read_csv("C:/Investment_research/returns.csv", index_col='ids')
 sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv",sep=',')
-src = "C:\Investment_research\signal_test_template.xlsx"
-file = "C:\Investment_research\signal_test.xlsx"
-copyfile(src, file)
+signal_name = 'e2p'
+src = dir + 'signal_test_template.xlsx'
+output = dir + 'signal_test_' + signal_name + '.xlsx'
+copyfile(src, output)
 
 
-scores.columns = pd.to_datetime(scores.columns)
-returns.columns = pd.to_datetime(returns.columns)
+#scores.columns = pd.to_datetime(scores.columns)
+#returns.columns = pd.to_datetime(returns.columns)
 
 #scores1 = basic_tools.convert_to(scores,'d')
 #returns = basic_tools.convert_to(returns,'m')

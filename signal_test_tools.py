@@ -5,6 +5,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import signal_test_tools
 import basic_tools
+import clean_data_tools as cdt
+import signals as s
+from shutil import copyfile
 
 ## Jitter will add noise to the data, to avoid a tie in case of splitting data into fractiles
 def jitter(series, noise_reduction=100000000):
@@ -156,3 +159,29 @@ def signal_test_write_coverage_turnover(scores,sector,fractile,by_sector,file,op
     turnover = turnover_quintile(scores,quintile)
     basic_tools.write_to_sheet(coverage, file, 'coverage', False)
     basic_tools.write_to_sheet(turnover, file, 'TO', open)
+
+def run_signal_test(signal_name,dates,ids,dir = "C:\Investment_research\\",nmon=1,open=True,*args):
+    func_name = eval('s.' + signal_name.lower())
+    signal = func_name(dates, ids, *args)
+    returns = cdt.get_returnlocal(dates, ids)
+    scores = zscore_clean(signal, axis=1)
+
+    src = dir + 'signal_test_template.xlsx'
+    output = dir + 'signal_test_' + signal_name + '.xlsx'
+    copyfile(src, output)
+    sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
+    signal_test_tools.signal_test_write_returns(scores,returns,nmon,output,False)
+    signal_test_tools.signal_test_write_ic(scores,returns,sector,nmon,output,False)
+    signal_test_tools.signal_test_write_coverage_turnover(scores,sector,5,True,output,open)
+
+def zscore_clean(df,axis=0):
+    df = df.sub(df.mean(axis=axis), axis=abs(axis-1)).div(df.std(axis=axis), axis=abs(axis-1))
+    df[(df.abs() > 4)] = np.n
+    df = df.sub(df.mean(axis=axis), axis=abs(axis - 1)).div(df.std(axis=axis), axis=abs(axis - 1))
+    df[(df.abs() > 4)] = np.n
+    df = df.sub(df.mean(axis=axis), axis=abs(axis - 1)).div(df.std(axis=axis), axis=abs(axis - 1))
+    df[(df.abs() > 4)] = np.n
+    df[(df.abs() > 3)] = 3
+    df = df.sub(df.mean(axis=axis), axis=abs(axis - 1)).div(df.std(axis=axis), axis=abs(axis - 1))
+    return df
+
