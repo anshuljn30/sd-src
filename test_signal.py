@@ -39,4 +39,9 @@ copyfile(src, output)
 
 stt.run_signal_test(signal,returns,sector,nmon,output,open)
 
+ebit2mkt = signal_data('ebit2mktcap',dates,ids)
 
+def signal_data(signal_name,dates,ids,*args):
+    func_name = eval('s.' + signal_name.lower())
+    signal = func_name(dates, ids, *args)
+    return signal
