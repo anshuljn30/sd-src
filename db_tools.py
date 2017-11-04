@@ -27,6 +27,11 @@ def get_fundamental_data(issuer_id, item_id, periodicity, from_date, to_date, db
     data = pd.read_sql(sql, db)
 
     data = data.rename(columns={'start_date': 'dates', 'issuer_id': 'ids'})
+    data['dates'] = pd.to_datetime(data['dates'], format="%Y%m%d")
+    data['period_end_date'] = pd.to_datetime(data['period_end_date'], format="%Y%m%d", infer_datetime_format=True)
+    data.ids = data.ids.astype(int)
+    data.numeric_value = data.numeric_value.astype(float)
+    data = data.drop_duplicates(keep='last')
     return data
 
 
@@ -44,6 +49,10 @@ def get_market_data(security_id, item_id, periodicity, from_date, to_date, db):
     data = pd.read_sql(sql, db)
 
     data = data.rename(columns={'start_date': 'dates', 'security_id': 'ids'})
+    data['dates'] = pd.to_datetime(data['dates'], format="%Y%m%d")
+    data.ids = data.ids.astype(int)
+    data.numeric_value = data.numeric_value.astype(float)
+    data = data.drop_duplicates(keep='last')
     return data
 
 
@@ -61,6 +70,10 @@ def get_index_market_data(index_id, item_id, periodicity, from_date, to_date, db
     data = pd.read_sql(sql, db)
 
     data = data.rename(columns={'start_date': 'dates', 'security_id': 'ids'})
+    data['dates'] = pd.to_datetime(data['dates'], format="%Y%m%d")
+    data.ids = data.ids.astype(int)
+    data.numeric_value = data.numeric_value.astype(float)
+    data = data.drop_duplicates(keep='last')
     return data
 
 
