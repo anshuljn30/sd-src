@@ -24,22 +24,27 @@ def convert_to(data, frequency):
 
 def get_universe(dates):
     ids = dt.get_all_security_ids()
-    mcap = cdt.get_clean_data('SecurityMcapUsd', dates, ids)
-    volume = cdt.get_clean_data('ADV', dates, ids, 90)
+    mcap = cdt.get_clean_data('SecurityMcapUsd', dates=dates, ids=ids)
+    volume = cdt.get_clean_data('ADV', dates=dates, ids=ids, window=90)
     universe = (mcap > 1e5) & (volume > 1e4)
     universe = universe.loc[:, universe.any(axis=0)]   # trim ids which were never in the universe
     return universe
 
 
-def aggregate(data, property, func, *args):
+def aggregate(data, property, func, **kwargs):
     ids = list(data)
     company = c.Company(ids)
-    agg_data = data.groupby(by=getattr(company, property), axis=1)
-    if func == 'weighted_mean':
-        w = args[0]
-        func = lambda x: np.average(x, weights=w, axis=1)
+    company_property = getattr(company, property).set_index('issuer_id').T.to_dict(orient='records')[0]
+    split_data = data.groupby(by=company_property, axis=1)
 
-    agg_data = agg_data.apply(func)
+    if func == 'weighted_mean' and 'weights' in kwargs:
+        w = kwargs['weights']
+        w = w.div(w.sum(axis=1, skipna=True), axis=0)
+        func = lambda x: (x*w).sum(axis=1, skipna=True)
+    else:
+        func = lambda x: x.func(axis=1, skipna=True)
+
+    agg_data = split_data.apply(func)
     return agg_data
 
 
