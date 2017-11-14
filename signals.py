@@ -1,7 +1,8 @@
 import clean_data_tools as cdt
 
 def e2p(dates,ids):
-    eps = cdt.get_clean_data('EPS', dates=dates, ids=ids)
+    kwargs = {"dates": dates, "ids": ids}
+    eps = cdt.get_clean_data('EPS',  **kwargs)
     price = cdt.get_clean_data('PriceLocalAdj', dates=dates, ids=ids)
     e2p = eps / price
     return e2p

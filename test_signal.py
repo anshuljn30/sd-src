@@ -9,6 +9,9 @@ import signals as s
 
 dates = pd.date_range('20051231','20161231', freq='m')
 ids = db.get_all_security_ids()
+
+
+
 e2p = s.e2p(dates, ids)
 stt.run_signal_test(e2p,dates,ids)
 
