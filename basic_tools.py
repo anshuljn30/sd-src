@@ -6,6 +6,7 @@ import xlwings as xw
 import numpy as np
 import db_tools as dt
 import clean_data_tools as cdt
+import company as c
 
 
 def random_frame(ndates, nids):
@@ -23,11 +24,28 @@ def convert_to(data, frequency):
 
 def get_universe(dates):
     ids = dt.get_all_security_ids()
-    mcap = cdt.get_clean_data('SecurityMcapUsd', dates, ids)
-    volume = cdt.get_clean_data('ADV', dates, ids, 90)
+    mcap = cdt.get_clean_data('SecurityMcapUsd', dates=dates, ids=ids)
+    volume = cdt.get_clean_data('ADV', dates=dates, ids=ids, window=90)
     universe = (mcap > 1e5) & (volume > 1e4)
     universe = universe.loc[:, universe.any(axis=0)]   # trim ids which were never in the universe
     return universe
+
+
+def aggregate(data, property, func, **kwargs):
+    ids = list(data)
+    company = c.Company(ids)
+    company_property = getattr(company, property).set_index('issuer_id').T.to_dict(orient='records')[0]
+    split_data = data.groupby(by=company_property, axis=1)
+
+    if func == 'weighted_mean' and 'weights' in kwargs:
+        w = kwargs['weights']
+        w = w.div(w.sum(axis=1, skipna=True), axis=0)
+        func = lambda x: (x*w).sum(axis=1, skipna=True)
+    else:
+        func = lambda x: x.func(axis=1, skipna=True)
+
+    agg_data = split_data.apply(func)
+    return agg_data
 
 
 def fill_forward(df,column_from):
