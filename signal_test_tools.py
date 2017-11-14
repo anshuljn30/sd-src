@@ -7,6 +7,7 @@ import basic_tools
 import clean_data_tools as cdt
 import signals as s
 from shutil import copyfile
+import company as c
 
 
 # Jitter will add noise to the data, to avoid a tie in case of splitting data into fractiles
@@ -180,7 +181,9 @@ def run_signal_test(signal,dates,ids,dir = "C:\Investment_research\\",outfile='d
     else:
         outfile = dir + 'signal_test_' + outfile + '.xlsx'
     copyfile(src, outfile)
-    sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
+    Company = c.Company(ids)
+    sector = Company.sector
+    #sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
     signal_test_tools.signal_test_write_returns(scores,returns,nmon,outfile,False)
     signal_test_tools.signal_test_write_ic(scores,returns,sector,nmon,outfile,False)
     signal_test_tools.signal_test_write_coverage_turnover(scores,sector,5,True,outfile,open)
