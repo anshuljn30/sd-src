@@ -37,6 +37,31 @@ def get_fundamental_data(issuer_id, item_id, periodicity, from_date, to_date, db
     return data
 
 
+def get_estimate_data(issuer_id, item_id, periodicity, from_date, to_date, estimate_type, forward_year, db):
+    issuer_id = ', '.join(["'{}'".format(value) for value in issuer_id])
+    from_date = from_date.strftime('%Y%m%d')
+    to_date = to_date.strftime('%Y%m%d')
+    sql = "SELECT issuer_id, period_end_date, start_date, numeric_value " \
+        "FROM estimate_data " \
+        "WHERE issuer_id IN (" + issuer_id + ") " \
+        "AND fundamental_item_id = '" + str(item_id) + "' " \
+        "AND estimate_type = '" + estimate_type + "' " \
+        "AND forward_year = '" + str(forward_year) + "' " \
+        "AND periodicity_id = '" + str(periodicity) + "' "\
+        "AND to_date(start_date, 'YYYYMMDD') >= to_date('" + str(from_date) + "','YYYYMMDD') " \
+        "AND to_date(start_date, 'YYYYMMDD') <= to_date('" + str(to_date) + "','YYYYMMDD') "
+
+    data = pd.read_sql(sql, db)
+
+    data = data.rename(columns={'start_date': 'dates', 'issuer_id': 'ids'})
+    data['dates'] = pd.to_datetime(data['dates'], format="%Y%m%d")
+    data['period_end_date'] = pd.to_datetime(data['period_end_date'], format="%Y%m%d", infer_datetime_format=True)
+    data.ids = data.ids.astype(int)
+    data.numeric_value = data.numeric_value.astype(float)
+    data = data.drop_duplicates(keep='last')
+    return data
+
+
 def get_market_data(security_id, item_id, periodicity, from_date, to_date, db):
     security_id = ', '.join(["'{}'".format(value) for value in security_id])
     from_date = from_date.strftime('%Y%m%d')

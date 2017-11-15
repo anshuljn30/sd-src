@@ -24,7 +24,7 @@ def convert_to(data, frequency):
 
 def get_universe(dates):
     ids = dt.get_all_security_ids()
-    mcap = cdt.get_clean_data('SecurityMcapUsd', dates=dates, ids=ids)
+    mcap = cdt.get_clean_data('security_mcap_usd', dates=dates, ids=ids)
     volume = cdt.get_clean_data('ADV', dates=dates, ids=ids, window=90)
     universe = (mcap > 1e5) & (volume > 1e4)
     universe = universe.loc[:, universe.any(axis=0)]   # trim ids which were never in the universe
