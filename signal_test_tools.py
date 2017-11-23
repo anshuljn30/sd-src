@@ -169,24 +169,21 @@ def signal_test_write_coverage_turnover(scores,sector,fractile,by_sector,file,op
     basic_tools.write_to_sheet(coverage, file, 'coverage', False)
     basic_tools.write_to_sheet(turnover, file, 'TO', open)
 
-def run_signal_test(signal,dates,ids,dir = "C:\Investment_research\\",outfile='default',nmon=1,open=True,*args):
-    returns = cdt.get_returnlocal(dates, ids)
+def run_signal_test(signal,dir = "C:\Investment_research\\",outfile='output',nmon=1,open=True,*args):
+    returns = cdt.get_return_local(signal.index, list(signal))
     scores = zscore_clean(signal, axis=1)
     scores = scores.T
     returns = returns.T
 
     src = dir + 'signal_test_template.xlsx'
-    if (outfile=='default'):
-        outfile = dir + 'signal_test_' + signal_name + '.xlsx'
-    else:
-        outfile = dir + 'signal_test_' + outfile + '.xlsx'
+    outfile = dir + 'signal_test_' + outfile + '.xlsx'
     copyfile(src, outfile)
-    Company = c.Company(ids)
+    Company = c.Company(list(signal))
     sector = Company.sector
     #sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
-    signal_test_tools.signal_test_write_returns(scores,returns,nmon,outfile,False)
-    signal_test_tools.signal_test_write_ic(scores,returns,sector,nmon,outfile,False)
-    signal_test_tools.signal_test_write_coverage_turnover(scores,sector,5,True,outfile,open)
+    signal_test_write_returns(scores,returns,nmon,outfile,False)
+    signal_test_write_ic(scores,returns,sector,nmon,outfile,False)
+    signal_test_write_coverage_turnover(scores,sector,5,True,outfile,open)
 
 def zscore_clean(df,axis=0):
     df = df.sub(df.mean(axis=axis), axis=abs(axis-1)).div(df.std(axis=axis), axis=abs(axis-1))
