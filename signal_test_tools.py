@@ -180,6 +180,8 @@ def run_signal_test(signal,dir = "C:\Investment_research\\",outfile='output',nmo
     copyfile(src, outfile)
     Company = c.Company(list(signal))
     sector = Company.sector
+    sector.rename(columns={'issuer_id': 'ids'}, inplace=True)
+
     #sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
     signal_test_write_returns(scores,returns,nmon,outfile,False)
     signal_test_write_ic(scores,returns,sector,nmon,outfile,False)
