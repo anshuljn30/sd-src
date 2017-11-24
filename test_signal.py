@@ -22,3 +22,9 @@ e2p = eps / price
 stt.run_signal_test(e2p,outfile='e2p')
 
 
+signal = e2p
+dir = "C:\Investment_research\\"
+file = "C:\Investment_research\\test.csv"
+outfile='output'
+nmon=1
+open=True
