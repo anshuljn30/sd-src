@@ -61,7 +61,7 @@ def fractile_returns_df(scores, returns, fractile, nmon):
         else:
             returns_loc = pd.DataFrame(np.nan, index=returns.index, columns=[returns_date])
 
-        if (scores_loc.count().item() >= 2*fractile  and scores_loc.count().item() >= 20):
+        if (scores_loc.count().item() >= 2*fractile  ):
             try:
                 fractile_returns_df = pd.concat([fractile_returns_df, fractile_returns(scores_loc, returns_loc, fractile)])
             except Exception:
@@ -83,7 +83,7 @@ def fractile_correlation_df(scores, returns, sector, fractile, nmon, by_sector):
         else:
             returns_loc = pd.DataFrame(np.nan, index=returns.index, columns=[returns_date])
 
-        if (scores_loc.count()[0].item() >= 2 * fractile):
+        if (scores_loc.count()[0].item() >= 2 * fractile and scores_loc.count().item() >= 20):
             try:
                 fractile_correlation_df = pd.concat([fractile_correlation_df, fractile_correlation(scores_loc, returns_loc, fractile, by_sector)])
             except Exception:
