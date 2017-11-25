@@ -98,7 +98,7 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
     decile_returns =  fractile_returns_df(scores, returns, 10,nmon)
     quintile_returns.columns=[['q1','q2','q3','q4','q5']]
     decile_returns.columns = [['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10']]
-    fractile_returns_write = pd.merge(quintile_returns, decile_returns, on=None,left_index=True, right_index=True, how='outer').set_index(quintile_returns.index)
+    fractile_returns_write = pd.merge(quintile_returns, decile_returns, on=None,left_index=True, right_index=True, how='outer')
 
     returns_calc = pd.DataFrame(index=fractile_returns_write.index)
     returns_calc['universe'] = fractile_returns_write[['q1', 'q2', 'q3', 'q4', 'q5']].mean(axis=1)
@@ -114,7 +114,7 @@ def signal_test_write_returns(scores,returns,nmon,file,open):
 def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     for k in range(1,13):
         try:
-            universe_correlation = pd.merge(universe_correlation, fractile_correlation_df(scores, returns, sector, 1, k + nmon - 1, False),left_index=True, right_index=True, how='outer').set_index(universe_correlation.index)
+            universe_correlation = pd.merge(universe_correlation, fractile_correlation_df(scores, returns, sector, 1, k + nmon - 1, False),left_index=True, right_index=True, how='outer')
 
         except Exception:
             universe_correlation = fractile_correlation_df(scores, returns, sector, 1, k + nmon - 1, False)
@@ -129,8 +129,8 @@ def signal_test_write_ic(scores,returns,sector,nmon,file,open):
     x.sort()
     sector_correlation = fractile_correlation_df(scores, returns, sector, 1, nmon, True)
     sector_correlation.columns = x
-    correlation_write = pd.merge(universe_correlation, quintile_correlation, on=None,left_index=True, right_index=True, how='outer').set_index(universe_correlation.index)
-    correlation_write = pd.merge(correlation_write, sector_correlation, on=None,left_index=True, right_index=True, how='outer').set_index(correlation_write.index)
+    correlation_write = pd.merge(universe_correlation, quintile_correlation, on=None,left_index=True, right_index=True, how='outer')
+    correlation_write = pd.merge(correlation_write, sector_correlation, on=None,left_index=True, right_index=True, how='outer')
 
     basic_tools.write_to_sheet(correlation_write, file, 'IC', open)
 
@@ -143,7 +143,7 @@ def coverage_data(scores,sector,fractile,by_sector):
         if (scores_loc.count().item() >= 2 * fractile):
             quintile[scores.columns[i]] = pd.DataFrame(list(pd.qcut(scores_loc[scores.columns[i]],fractile,labels=False,retbins=True)[0:1])).T
     if(by_sector==True):
-        quintile = pd.merge(quintile, sector[['ids','gics_sector_name']], left_index=True, right_on = 'ids', how = 'inner').set_index(quintile.index)
+        quintile = pd.merge(quintile, sector[['ids','gics_sector_name']], left_index=True, right_on = 'ids', how = 'inner')
 
         x = quintile.groupby(['gics_sector_name']).count().T
         x['coverage']  = x.sum(axis=1)
@@ -161,11 +161,32 @@ def turnover_quintile(scores,quintile):
         date = quintile.columns[i]
         date_prev = quintile.columns[i-1]
         to.at[i - 1, 'date'] = date
-        to.at[i-1,'Q1']= 1- (len(quintile.index[quintile[date]==0].intersection(quintile.index[quintile[date_prev]==0]))/len(quintile.index[quintile[date]==0]))
-        to.at[i-1,'Q2']= 1- (len(quintile.index[quintile[date]==1].intersection(quintile.index[quintile[date_prev]==1]))/ len(quintile.index[quintile[date] == 1]))
-        to.at[i-1,'Q3']= 1 - (len(quintile.index[quintile[date]==2].intersection(quintile.index[quintile[date_prev]==2]))/ len(quintile.index[quintile[date] == 2]))
-        to.at[i-1,'Q4']= 1 - (len(quintile.index[quintile[date]==3].intersection(quintile.index[quintile[date_prev]==3]))/ len(quintile.index[quintile[date] == 3]))
-        to.at[i-1,'Q5']= 1 - (len(quintile.index[quintile[date]==4].intersection(quintile.index[quintile[date_prev]==4]))/ len(quintile.index[quintile[date] == 4]))
+        try:
+            to.at[i-1,'Q1']= 1- (len(quintile.index[quintile[date]==0].intersection(quintile.index[quintile[date_prev]==0]))/len(quintile.index[quintile[date]==0]))
+        except Exception:
+            to.at[i - 1, 'Q1'] = np.nan
+
+        try:
+            to.at[i - 1, 'Q2'] = 1 - (len(quintile.index[quintile[date] == 1].intersection(quintile.index[quintile[date_prev] == 1])) / len(quintile.index[quintile[date] == 1]))
+        except Exception:
+            to.at[i - 1, 'Q2'] = np.nan
+
+        try:
+            to.at[i - 1, 'Q3'] = 1 - (len(quintile.index[quintile[date] == 2].intersection(quintile.index[quintile[date_prev] == 2])) / len(quintile.index[quintile[date] == 2]))
+        except Exception:
+            to.at[i - 1, 'Q3'] = np.nan
+
+        try:
+            to.at[i - 1, 'Q4'] = 1 - (len(quintile.index[quintile[date] == 3].intersection(quintile.index[quintile[date_prev] == 3])) / len(quintile.index[quintile[date] == 3]))
+        except Exception:
+            to.at[i - 1, 'Q4'] = np.nan
+
+        try:
+            to.at[i - 1, 'Q5'] = 1 - (len(quintile.index[quintile[date] == 4].intersection(quintile.index[quintile[date_prev] == 4])) / len(quintile.index[quintile[date] == 4]))
+        except Exception:
+            to.at[i - 1, 'Q5'] = np.nan
+
+
     return to
 
 
