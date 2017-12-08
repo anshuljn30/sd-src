@@ -33,7 +33,7 @@ def get_clean_data(item_name, **kwargs):
         func_name = eval('get_' + item_name.lower())
         data = func_name(dates, ids, **kwargs)
     except NameError:
-        data = rdt.get_raw_data(item_name, dates, ids, **kwargs)
+        data = rdt.get_raw_data(item_name.lower(), dates, ids, **kwargs)
 
     # Return only those dates and ids which are in universe
     data = data[universe]
