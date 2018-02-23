@@ -202,6 +202,7 @@ def run_signal_test(signal,dir = "C:\Investment_research\\",outfile='output',nmo
     scores = zscore_clean(signal, axis=1)
     scores = scores.T
     returns = returns.T
+    signal_name = outfile
 
     src = dir + 'signal_test_template.xlsx'
     outfile = dir + 'signal_test_' + outfile + '.xlsx'
@@ -211,6 +212,7 @@ def run_signal_test(signal,dir = "C:\Investment_research\\",outfile='output',nmo
     sector.rename(columns={'issuer_id': 'ids'}, inplace=True)
 
     #sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
+    basic_tools.write_to_sheet(signal, outfile, signal_name, False)
     signal_test_write_returns(scores,returns,nmon,outfile,False)
     signal_test_write_ic(scores,returns,sector,nmon,outfile,False)
     signal_test_write_coverage_turnover(scores,sector,5,True,outfile,open)
