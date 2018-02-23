@@ -212,7 +212,7 @@ def run_signal_test(signal,dir = "C:\Investment_research\\",outfile='output',nmo
     sector.rename(columns={'issuer_id': 'ids'}, inplace=True)
 
     #sector = pd.read_csv("C:/Investment_research/issuer_master_sector.csv", sep=',')
-    basic_tools.write_to_sheet(signal, outfile, signal_name, False)
+    basic_tools.write_to_sheet(signal, outfile, 'signal', False)
     signal_test_write_returns(scores,returns,nmon,outfile,False)
     signal_test_write_ic(scores,returns,sector,nmon,outfile,False)
     signal_test_write_coverage_turnover(scores,sector,5,True,outfile,open)
