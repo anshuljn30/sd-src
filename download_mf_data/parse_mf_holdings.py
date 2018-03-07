@@ -34,6 +34,7 @@ def parse_files(amc_name, dates):
 
         try:
             xls = pd.ExcelFile(xls_file)
+
         except FileNotFoundError:
             print('No File found for date ' + date)
             continue
@@ -84,7 +85,7 @@ def parse_files(amc_name, dates):
     # Now start cleaning up the data frame
     df_pass1 = map_to_ids(df_all_fund, security_master, new_fi_master, new_fund_master)
     df_pass2 = cleanup_isin(df_pass1)
-    df_pass3 = cleanup_fund_names(df_pass2, fund_index, amc_name_spaced)
+    df_pass3 = cleanup_fund_names(df_pass2, fund_index, amc_name_spaced, new_fund_master)
 
     # Assign new ids for new securities & funds and write to csv
     df_security_master = assign_new_security_ids(df_pass3, security_master)
@@ -130,6 +131,14 @@ def map_to_ids(df, security_master, fi_master, fund_master):
     where_not_empty = df_clean[df_clean['security_id'].notnull()].index
     df_clean.loc[where_not_empty, 'is_equity'] = 1
 
+    # Overwrite is_equity = 1 if isin has is_equity = 1 elsewhere
+    df_isin_isequity = df_clean[['isin', 'is_equity']]
+    df_isin_isequity = df_isin_isequity.groupby('isin').apply(lambda x: 1 if any(x['is_equity'] == 1) else np.nan)
+    df_isin_isequity = df_isin_isequity.reset_index()
+    df_isin_isequity.columns = np.where(df_isin_isequity.columns == 0, 'is_equity', df_isin_isequity.columns)
+    del df_clean['is_equity']
+    df_clean = pd.merge(df_clean, df_isin_isequity, left_on='isin', right_on='isin', how='left')
+
     # Map fixed income ids where is_equity is not 1
     df_fi = df_clean[df_clean['is_equity'] != 1]
     df_equity = df_clean[df_clean['is_equity'] == 1]
@@ -144,24 +153,17 @@ def map_to_ids(df, security_master, fi_master, fund_master):
 
 
 def cleanup_isin(df):
-    # Certain names change isin through history, try to match them by name
-    df_temp = df[['security_name', 'security_id']]
-    df_temp = df_temp.dropna(axis=0, how='any')
-    # Do not use drop_duplicates() straightaway as there are typos in isin at some places - instead group by the name \
-    # and try to find the security_id per name with most occurrences and keep it
-    df_temp = df_temp.groupby('security_name').apply(lambda x: x['security_id'].value_counts().idxmax())
-    df_temp = df_temp.reset_index()
-    # replace the default 0 to 'security_id'
-    df_temp.columns = np.where(df_temp.columns == 0, 'security_id', df_temp.columns)
+    # Certain equities change isin through history, try to match them by name
+    df_equity = df[df['is_equity'] == 1]
+    df_fi = df[df['is_equity'] != 1]
 
-    # Now merge by security_name
-    del df['security_id']
-    df_clean = pd.merge(df, df_temp, left_on='security_name', right_on='security_name', how='left')
+    df_clean = normalize_column(df_equity, 'security_name', 'security_id')
+    df_clean = df_clean.append(df_fi)
     df_clean = df_clean.drop_duplicates()
     return df_clean
 
 
-def cleanup_fund_names(df, fund_index, amc_name_spaced):
+def cleanup_fund_names(df, fund_index, amc_name_spaced, fund_master):
     # Clean up fund names from fund index
     df[['fund_ticker', 'fund_name']] = df[['fund_ticker', 'fund_name']].apply(lambda x: x.str.lower())
     if not fund_index.empty:
@@ -185,20 +187,21 @@ def cleanup_fund_names(df, fund_index, amc_name_spaced):
     # Prefix amc name in the fund name
     where_not_amc = df.index[~df['fund_name'].str.startswith(amc_name_spaced)]
     df.loc[where_not_amc, 'fund_name'] = amc_name_spaced + ' ' + df.loc[where_not_amc, 'fund_name']
-    return df
+
+    del df['fund_id']
+    df_clean = pd.merge(df, fund_master[['fund_name', 'fund_id']], left_on='fund_name', right_on='fund_name',
+                        how='left')
+    return df_clean
 
 
 def assign_new_security_ids(df, new_security_master):
     # Get all the equities where security_id is null and assign them a new security_id
     df_equity = df[(df['is_equity'] == 1) & (df['security_id'].isnull())]
-    df_equity = df_equity[['isin', 'security_name']]
-    df_equity = df_equity.drop_duplicates(subset='isin')
-    df_equity = df_equity.groupby('security_name').apply(lambda x: x['isin'].value_counts().idxmax())
-    df_equity = df_equity.reset_index()
-    df_equity.columns = np.where(df_equity.columns == 0, 'isin', df_equity.columns)  # replace the default 0 to 'isin'
-    last_known_security_id = new_security_master['security_id'].iloc[-1]
+    df_equity = normalize_column(df_equity, 'security_name', 'isin')
+
     nids = len(df_equity.index)
     if nids > 0:
+        last_known_security_id = new_security_master['security_id'].iloc[-1]
         df_equity['security_id'] = pd.Series(range(last_known_security_id + 1, last_known_security_id + nids + 1, 1))
         df_equity = df_equity[['security_id', 'security_name', 'isin']]
     return df_equity
@@ -209,10 +212,15 @@ def assign_new_fi_ids(df, new_fi_master):
     df_fi = df[(df['security_id'].isnull()) & (df['is_equity'] != 1)]
     df_fi = df_fi[['isin', 'security_name', 'coupon', 'rating']]
     df_fi = df_fi.drop_duplicates()
-    df_fi = df_fi.drop_duplicates(subset='isin').reset_index(drop=True)
-    last_known_fi_id = new_fi_master['security_id'].iloc[-1]
+
+    if 'coupon' in df_fi.columns:
+        df_fi = normalize_column(df_fi, 'isin', 'coupon')
+    if 'rating' in df_fi.columns:
+        df_fi = normalize_column(df_fi, 'isin', 'rating')
+
     nids = len(df_fi.index)
     if nids > 0:
+        last_known_fi_id = new_fi_master['security_id'].iloc[-1]
         df_fi['security_id'] = pd.Series(range(last_known_fi_id + 1, last_known_fi_id + nids + 1, 1))
         df_fi = df_fi[['security_id', 'security_name', 'isin', 'coupon', 'rating']]
     return df_fi
@@ -235,9 +243,11 @@ def assign_new_fund_ids(df, new_fund_master, amc_name):
     df_fund_dirty.iloc[where_ticker_null, 0] = df_fund_dirty.iloc[where_ticker_null, 1]
     df_fund = df_fund_clean.append(df_fund_dirty)
     df_fund = df_fund.drop_duplicates().reset_index(drop=True)
-    last_known_fund_id = new_fund_master['fund_id'].iloc[-1]
+    df_fund = normalize_column(df_fund, 'fund_name', 'fund_ticker')
+
     nids = len(df_fund.index)
     if nids > 0:
+        last_known_fund_id = new_fund_master['fund_id'].iloc[-1]
         df_fund['fund_id'] = pd.Series(range(last_known_fund_id + 1, last_known_fund_id + nids + 1, 1))
         df_fund = df_fund[['fund_id', 'fund_ticker', 'fund_name']]
         df_fund['amc_name'] = amc_name
@@ -246,13 +256,23 @@ def assign_new_fund_ids(df, new_fund_master, amc_name):
 
 def merge_all_new_ids(df, security_master, fund_master):
     # Populate df with newly created security_ids, fund_ids
-    df_clean = df.drop(['security_id', 'fund_ticker', 'fund_id'], axis=1)
-    df_clean['isin'] = df_clean['isin'].astype(str)
+    df_null = df[df['security_id'].isnull()]
+    df_notnull = df[df['security_id'].notnull()]
+    df_null = df_null.drop(['security_id'], axis=1)
+    df_null['isin'] = df_null['isin'].astype(str)
     security_master['isin'] = security_master['isin'].astype(str)
-    df_clean = pd.merge(df_clean, security_master[['isin', 'security_id']], left_on='isin', right_on='isin', how='left')
-    df_clean = pd.merge(df_clean, fund_master[['fund_name', 'fund_id']], left_on='fund_name', right_on='fund_name',
+    df_clean = pd.merge(df_null, security_master[['isin', 'security_id']], left_on='isin', right_on='isin', how='left')
+    df_clean = df_clean.append(df_notnull)
+    df_clean = cleanup_isin(df_clean)
+
+    # Now with fund_ids
+    df_null2 = df_clean[df_clean['fund_id'].isnull()]
+    df_notnull2 = df_clean[df_clean['fund_id'].notnull()]
+    df_null2 = df_null2.drop(['fund_id', 'fund_ticker'], axis=1)
+    df_clean2 = pd.merge(df_null2, fund_master[['fund_name', 'fund_id']], left_on='fund_name', right_on='fund_name',
                         how='left')
-    return df_clean
+    df_clean2 = df_clean2.append(df_notnull2)
+    return df_clean2
 
 
 def write_to_csv(df, xls_out_path, amc_name):
@@ -284,6 +304,7 @@ def parse_sheet_data(df, date, sheet_name, header_index, amc_name_spaced):
     df.columns = header_row
     df.columns = df.columns.astype(str).str.lower()
     df = df.drop([col for col in df.columns if col.strip() == 'nan'], axis=1).copy()
+    df = df.loc[:, ~df.columns.duplicated()]
     isin_col = df.filter(regex='isin').columns
     df.rename(columns={isin_col[0]: 'isin'}, inplace=True)
     name_col = df.filter(regex='name').columns
@@ -301,6 +322,9 @@ def parse_sheet_data(df, date, sheet_name, header_index, amc_name_spaced):
     else:
         df['quantity'] = ""
     rating_col = df.filter(regex='rating').columns
+    if rating_col.empty:
+        rating_col = df.filter(regex='industry').columns
+
     if not rating_col.empty:
         df.rename(columns={rating_col[0]: 'rating'}, inplace=True)
     else:
@@ -316,10 +340,12 @@ def parse_sheet_data(df, date, sheet_name, header_index, amc_name_spaced):
     df_clean['is_equity'] = np.nan
     get_des = 1
     is_equity_flag = 0
+    counter = 0
     for i in range(0, len(df.index)):
         df_temp = pd.DataFrame(df.iloc[[i]])
         # Check if we find isin
         if any((df_temp['isin'].astype(str).str[:2] == 'IN') & (df_temp['isin'].astype(str).str.len() == 12)):
+            counter = 0
             if is_equity_flag == 1:
                 df_temp['is_equity'] = 1
             else:
@@ -331,28 +357,48 @@ def parse_sheet_data(df, date, sheet_name, header_index, amc_name_spaced):
                 str_x = " ".join(str(x) for x in x)
                 str_x = str_x.lower()
                 get_des = 0
-                if (re.search(r'\bequity\b', str_x) is not None) & (re.search(r'\bdebt\b', str_x) is None):
-                    df_temp.loc[i, 'is_equity'] = 1
-                    is_equity_flag = 1
+                matches_equity = ((re.search(r'equity', str_x) is not None) |
+                    (re.search(r'equities', str_x) is not None) | (re.search(r'preferred', str_x) is not None))
+                matches_debt = ((re.search(r'debt', str_x) is not None) | (re.search(r'debenture', str_x) is not None) |
+                     (re.search(r'bond', str_x) is not None))
+                if matches_debt:
+                    is_equity_flag = 0
+                else:
+                    if matches_equity:
+                        df_temp.loc[i, 'is_equity'] = 1
+                        is_equity_flag = 1
             df_clean = df_clean.append(df_temp)
             del df_temp
 
         else:
-            # Check if name and isin are also blank, then only turn the equity flag off
-            if any((df_temp['isin'].isnull()) | (df_temp['security_name'].isnull())):
-                get_des = 1
-                is_equity_flag = 0
+            if any((df_temp['isin'].isnull()) | (df_temp['isin'] == '')):
+                # Check if name is also blank, then only turn the equity flag off
+                if any((df_temp['security_name'].isnull()) | (df_temp['security_name'] == '')):
+                    is_equity_flag = 0
+                    get_des = 1
+                else:
+                    counter = counter + 1
+            else:
+                counter = counter + 1
 
-    # Clean up data frame - Replace any # , $ or * from the end of the name
+            # If there are 2 blank isin in a row then turn equity flag off
+            if counter > 1:
+                is_equity_flag = 0
+                get_des = 1
+
+    # Clean up data frame - Replace any # , @, $ or * from the beginning and end of the name
     if 'nan' in df_clean.columns:
         del df_clean['nan']
-    df_clean['security_name'].replace('\#+$', '', regex=True, inplace=True)
-    df_clean['security_name'].replace('\*+$', '', regex=True, inplace=True)
-    df_clean['security_name'].replace('\$+$', '', regex=True, inplace=True)
+
+    df_clean['security_name'].replace('^[\s@#*$^-]+', '', regex=True, inplace=True) # front
+    df_clean['security_name'].replace('[\s@#*$^-]+$', '', regex=True, inplace=True) # end
+
     df_clean['fund_ticker'] = sheet_name
     df_clean["date"] = date
     if fund_name:
         df_clean['fund_name'] = fund_name
+    else:
+        df_clean['fund_name'] = np.nan
     del df
     return df_clean
 
@@ -375,3 +421,17 @@ def parse_fund_index(df, amc_name_spaced):
     else:
         df = pd.DataFrame()
     return df
+
+
+def normalize_column(df, group_col, normal_col):
+    df_temp = df[[group_col, normal_col]]
+    df_temp = df_temp.dropna(axis=0, how='any')
+    df_temp = df_temp.drop_duplicates()
+    df_temp = df_temp.groupby(group_col).apply(lambda x: x[normal_col].value_counts().idxmax())
+    df_temp = df_temp.reset_index()
+    df_temp.columns = np.where(df_temp.columns == 0, normal_col, df_temp.columns)
+    del df[normal_col]
+    df_clean = pd.merge(df, df_temp, left_on=group_col, right_on=group_col, how='left')
+    if not df_clean.empty:
+        df_clean = df_clean.drop_duplicates(subset=group_col).reset_index(drop=True)
+    return df_clean
